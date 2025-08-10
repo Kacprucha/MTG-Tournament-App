@@ -3,6 +3,7 @@ package com.example.backend.controllers;
 import java.util.Collection;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -90,6 +91,7 @@ public class MatchController
         responseCode= "500",
         content= {@Content(schema = @Schema())})
     @GetMapping("/tournament/{tournamentName}")
+    @PreAuthorize("hasRole('ADMIN')")
     @JsonView(value = Views.Get.class)
     public Collection<MatchDto> findByTournament(
         @Parameter(description = "Name of the tournament", example = "Summer Cup") 
