@@ -1,6 +1,7 @@
 package com.example.backend.seciurity;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,10 +44,10 @@ public class KeycloakJwtAuthoritiesConverter implements Converter<Jwt, Collectio
 
     private Stream<SimpleGrantedAuthority> getRoles(Jwt jwt) 
     {
-        Stream<SimpleGrantedAuthority> realmAccess = getRealmAccess(jwt);
-        Stream<SimpleGrantedAuthority> resourceAccess = getResourceAccess(jwt);
+        List<SimpleGrantedAuthority> realmAccess = getRealmAccess(jwt).toList();
+        List<SimpleGrantedAuthority> resourceAccess = getResourceAccess(jwt).toList();
         
-        return Stream.concat(realmAccess, resourceAccess);
+        return Stream.concat(realmAccess.stream(), resourceAccess.stream());
     }
 
     @SuppressWarnings("unchecked")
