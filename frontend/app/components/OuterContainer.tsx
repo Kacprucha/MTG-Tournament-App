@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import UserIcon from "./UserIcon";
 
 interface OuterContainerProps {
   children: ReactNode;
@@ -7,12 +8,9 @@ interface OuterContainerProps {
 export default function OuterContainer({ children }: OuterContainerProps) {
   return (
     <div
-      className="absolute border border-cyan-400 rounded-lg flex flex-col"
+      className="fixed inset-0 border-2 border-cyan-400 rounded-lg "
       style={{
-        top: "80px",
-        bottom: "41px",
-        left: "60px",
-        right: "60px",
+        inset: '80px 60px 41px 60px'
       }}
     >
       {children}
