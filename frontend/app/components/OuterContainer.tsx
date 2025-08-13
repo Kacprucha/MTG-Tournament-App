@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import UserIcon from "./UserIcon";
 
 interface OuterContainerProps {
   children: ReactNode;
