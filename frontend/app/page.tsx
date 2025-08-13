@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react"
 
 import OuterContainer from "./components/OuterContainer";
 import MessageBox from "./components/MessageBox";
-import TurnamentsLayout from "./components/TurnamentsLayout";
+import TournamentsGrid from "./components/TournamentsGrid";
 
 function LoginPrompt() {
   return (
@@ -25,7 +25,7 @@ export default function Home() {
   }
 
   if (session) {
-    return <TurnamentsLayout/>
+    return <TournamentsGrid/>
   } else {
     return <LoginPrompt />
   }

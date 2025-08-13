@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import "./TournamentCard.css";
+import Button from "./Button";
 
 interface TournamentCardProps {
   title: string;
@@ -9,12 +10,7 @@ interface TournamentCardProps {
   onButtonClick: () => void;
 }
 
-const TournamentCard: React.FC<TournamentCardProps> = ({
-  title,
-  type,
-  imageFile,
-  onButtonClick,
-}) => {
+const TournamentCard: React.FC<TournamentCardProps> = ({ title, type, imageFile, onButtonClick }: TournamentCardProps) => {
   return (
     <div className="tournament-card">
       <div className="tournament-header">
@@ -33,9 +29,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
       </div>
 
       <div className="tournament-footer">
-        <button className="tournament-button" onClick={onButtonClick}>
-          Zobacz szczegóły
-        </button>
+        <Button text="Zobacz szczegóły" onClick={onButtonClick}/>
       </div>
     </div>
   );
