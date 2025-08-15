@@ -20,13 +20,13 @@ const MOCK_TOURNAMENTS: Tournament[] = [
     id: 1,
     title: "Winter Championship",
     type: "Sealed",
-    participants: ["PlayerOne", "PlayerTwo", "PlayerThree", "PlayerFour", "PlayerFive", "PlayerSix"],
+    participants: ["testuser", "PlayerTwo", "PlayerThree", "PlayerFour", "PlayerFive", "PlayerSix"],
   },
   {
     id: 2,
     title: "Summer Cup",
     type: "Standard",
-    participants: ["AlphaGamer", "BetaTester", "CharlieDuke", "DeltaForce"],
+    participants: ["testuser", "BetaTester", "CharlieDuke", "DeltaForce"],
   },
   {
     id: 3,
@@ -115,6 +115,7 @@ export default function TournamentsGrid () {
   const [error, setError] = useState<string | null>(null);
 
   const isAdmin = session?.user?.roles?.includes("ADMIN");
+  const currentUsername = session?.user?.username;
 
   // Efekt do pobierania danych, gdy komponent się zamontuje
   // useEffect(() => {
@@ -189,6 +190,7 @@ export default function TournamentsGrid () {
                   title={tournament.title}
                   type={tournament.type}
                   imageFile={"mtg_logo.svg"}
+                  buttonText={(tournament.participants.includes(currentUsername) || isAdmin) ? "Zobacz" : "Zapisz się"}
                   onButtonClick={() => handleCardClick(tournament.id)}
                 />
               </Col>

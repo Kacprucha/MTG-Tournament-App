@@ -7,10 +7,11 @@ interface TournamentCardProps {
   title: string;
   type: string;
   imageFile: string;
+  buttonText?: string;
   onButtonClick: () => void;
 }
 
-const TournamentCard: React.FC<TournamentCardProps> = ({ title, type, imageFile, onButtonClick }: TournamentCardProps) => {
+const TournamentCard: React.FC<TournamentCardProps> = ({ title, type, imageFile, buttonText, onButtonClick }: TournamentCardProps) => {
   return (
     <div className="tournament-card">
       <div className="tournament-header">
@@ -29,7 +30,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({ title, type, imageFile,
       </div>
 
       <div className="tournament-footer">
-        <Button text="Zobacz szczegóły" onClick={onButtonClick}/>
+        <Button text={buttonText || "Zobacz"} onClick={onButtonClick}/>
       </div>
     </div>
   );
