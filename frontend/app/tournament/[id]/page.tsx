@@ -2,7 +2,7 @@ import TournamentInfo from "../../components/tournament info/TournamentInfo";
 import AchievementsList from "../../components/tournament info/AchievementsList";
 import Scoreboard from "../../components/tournament info/Scoreboard";
 import OuterContainerHorizontal from "../../components/OuterContainerHorizontal";
-import Button from "@/app/components/Button";
+import AdminPanel from "@/app/components/tournament info/AdminPanel";
 
 // Typ parametru z dynamicznego routa
 interface TournamentPageProps {
@@ -52,9 +52,10 @@ export default async function Tournament ({ params }: TournamentPageProps) {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen w-full bg-[#293132] relative">
-      <OuterContainerHorizontal>
+      <OuterContainerHorizontal footer={<AdminPanel/>}>
         {/* lewa kolumna */}
         <TournamentInfo tournament={tournament} />
         {/* środek */}

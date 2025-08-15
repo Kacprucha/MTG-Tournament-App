@@ -42,11 +42,11 @@ export default function Navbar() {
     if (session) {
       signOut({ redirect: false });
 
-      // const logoutUrl = new URL("http://localhost:8443/realms/app/protocol/openid-connect/logout");
-      // logoutUrl.searchParams.set("id_token_hint", session.idToken ? session.idToken : "");
-      // logoutUrl.searchParams.set("post_logout_redirect_uri", window.location.origin);
+      const logoutUrl = new URL("http://localhost:8443/realms/app/protocol/openid-connect/logout");
+      logoutUrl.searchParams.set("id_token_hint", session.idToken ? session.idToken : "");
+      logoutUrl.searchParams.set("post_logout_redirect_uri", window.location.origin);
       
-      // window.location.href = logoutUrl.toString();
+      window.location.href = logoutUrl.toString();
     }
   }
 
