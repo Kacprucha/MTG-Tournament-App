@@ -7,7 +7,7 @@ interface DecodedToken {
     realm_access?: {
         roles?: string[];
     };
-    // ... inne pola z tokena
+    preferred_username?: string;
 }
 
 export const authOptions: AuthOptions = {
@@ -34,6 +34,10 @@ export const authOptions: AuthOptions = {
                     if (decodedToken.realm_access?.roles) {
                         token.userRoles = decodedToken.realm_access.roles;
                     }
+
+                    if (decodedToken.preferred_username) {
+                        token.username = decodedToken.preferred_username;
+                    }
                 } catch (error) {
                     console.error("Błąd dekodowania tokena JWT:", error);
                 }
@@ -47,6 +51,7 @@ export const authOptions: AuthOptions = {
 
             if (session.user) {
                 session.user.roles = token.userRoles;
+                session.user.username = token.username;
             }
 
             return session; 
