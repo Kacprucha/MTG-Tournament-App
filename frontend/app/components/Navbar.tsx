@@ -38,19 +38,15 @@ export default function Navbar() {
     }
   }
 
-  const handleLoginLogoutClick = () => {
+  const handleLogoutClick = () => {
     if (session) {
+      // const logoutUrl = new URL("http://localhost:8443/realms/app/protocol/openid-connect/logout");
+      // logoutUrl.searchParams.set("id_token_hint", session.idToken ? session.idToken : "");
+      // logoutUrl.searchParams.set("post_logout_redirect_uri", window.location.origin);
+      
+      // window.location.href = logoutUrl.toString();
+      
       signOut({ redirect: false });
-
-      const logoutUrl = new URL("http://localhost:8443/realms/app/protocol/openid-connect/logout");
-      logoutUrl.searchParams.set("id_token_hint", session.idToken ? session.idToken : "");
-      logoutUrl.searchParams.set("post_logout_redirect_uri", window.location.origin);
-      
-      window.location.href = logoutUrl.toString();
-      
-    } else {
-      // Logika logowania pozostaje bez zmian
-      signIn("keycloak");
     }
   }
 
@@ -62,7 +58,6 @@ export default function Navbar() {
       <header className="text-white p-4">
         <div className="container mx-auto flex justify-between items-center">
           <div className="text-lg font-bold">MTG App</div>
-          <div className="animate-pulse h-8 w-24 bg-gray-700 rounded-md"></div>
         </div>
       </header>
     )
@@ -78,7 +73,7 @@ export default function Navbar() {
               <Button text="Tabela wyników" onClick={handleLiderBoardClick}/>
               <Button text="Moje wyniki" onClick={handleMyStatsClick}/>
               <Button text="Osiągnięcia" onClick={handleAchivementsClick}/>
-              <Button text="Wyloguj" onClick={handleLoginLogoutClick}/>
+              <Button text="Wyloguj" onClick={handleLogoutClick}/>
             </>
           )}
         </div>

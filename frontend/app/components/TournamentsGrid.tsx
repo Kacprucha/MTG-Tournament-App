@@ -6,6 +6,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import TournamentCard from "./TournamentCard";
 import OuterContainer from "./OuterContainer";
+import Button from "./Button";
 
 interface Tournament {
   id: number;
@@ -51,6 +52,60 @@ const MOCK_TOURNAMENTS: Tournament[] = [
     type: "Commander",
     participants: ["MultiplayerMatt", "GroupHugGwen", "StaxSteve", "ComboCarl"],
   },
+  {
+    id: 7,
+    title: "Legacy Legends",
+    type: "Legacy",
+    participants: ["OldSchoolOscar", "VintageVictor", "EternalEve"],
+  },
+  {
+    id: 8,
+    title: "Vintage Vault",
+    type: "Vintage",
+    participants: ["TimelessTina", "ClassicCarter"],
+  },
+  {
+    id: 9,
+    title: "Holiday Special",
+    type: "Themed",
+    participants: ["FestiveFiona", "JollyJack", "CheerfulChloe"],
+  },
+  {
+    id: 10,
+    title: "Charity Event",
+    type: "Charity",
+    participants: ["GenerousGeorge", "KindKaren", "HelpfulHank"],
+  },
+  {
+    id: 11,
+    title: "Local League",
+    type: "League",
+    participants: ["LeagueLeader", "CompetitiveCathy", "FriendlyFred"],
+  },
+  {
+    id: 12,
+    title: "Online Open",
+    type: "Online",
+    participants: ["NetPlayer1", "WebWarrior", "DigitalDynamo"],
+  },
+  {
+    id: 13,
+    title: "Flashback Friday",
+    type: "Flashback",
+    participants: ["NostalgicNina", "RetroRalph"],
+  },
+  {
+    id: 14,
+    title: "Battle of the Planeswalkers",
+    type: "Planeswalker",
+    participants: ["WalkerWendy", "StrategistSam"],
+  },
+  {
+    id: 15,
+    title: "Epic Showdown",
+    type: "Epic",
+    participants: ["HeroicHannah", "LegendaryLeo"],
+  },
 ];
 
 export default function TournamentsGrid () {
@@ -58,6 +113,8 @@ export default function TournamentsGrid () {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const isAdmin = session?.user?.roles?.includes("ADMIN");
 
   // Efekt do pobierania danych, gdy komponent się zamontuje
   // useEffect(() => {
@@ -101,7 +158,7 @@ export default function TournamentsGrid () {
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <Spin size="large" tip="Ładowanie turniejów..." />
+        <Spin size="large" />
       </div>
     );
   }
@@ -115,23 +172,37 @@ export default function TournamentsGrid () {
     console.log(`Przechodzę do szczegółów turnieju o ID: ${id}`);
   };
 
+  const handleCreateClick = () => {
+    console.log("Otwieranie formularza tworzenia nowego turnieju...");
+    // Tutaj w przyszłości otworzysz modal lub przejdziesz do nowej strony
+    // np. router.push('/tournaments/create');
+  };
+
   return (
     <main className="min-h-screen w-full bg-[#293132] relative">
       <OuterContainer>
-        <div style={{ padding: '20px' }}>
-      <Row gutter={[16, 16]}> 
-        {tournaments.map((tournament) => (
-          <Col key={tournament.id} xs={24} sm={12} md={8} lg={6}>
-            <TournamentCard
-              title={tournament.title}
-              type={tournament.type}
-              imageFile={"mtg_logo.svg"}
-              onButtonClick={() => handleCardClick(tournament.id)}
+        <div className="scrollable-grid-container" style={{ flexGrow: 1, minHeight: 0, padding: '20px 20px 20px 20px' }}>
+          <Row gutter={[16, 16]}> 
+            {tournaments.map((tournament) => (
+              <Col key={tournament.id} xs={24} sm={12} md={8} lg={6} xl={4}>
+                <TournamentCard
+                  title={tournament.title}
+                  type={tournament.type}
+                  imageFile={"mtg_logo.svg"}
+                  onButtonClick={() => handleCardClick(tournament.id)}
+                />
+              </Col>
+            ))}
+          </Row>
+        </div>
+        {isAdmin && (
+          <div style={{ position: 'fixed', right: 80, bottom: 60}}>
+            <Button
+              text="Utwórz"
+              onClick={handleCreateClick}
             />
-          </Col>
-        ))}
-      </Row>
-    </div>
+          </div>
+        )}
       </OuterContainer>
     </main>
   );

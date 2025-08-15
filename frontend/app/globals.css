@@ -20,3 +20,11 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
 }
+
+.scrollable-grid-container {
+  overflow-y: auto;
+}
+
+.scrollable-grid-container::-webkit-scrollbar {
+  display: none;
+}
