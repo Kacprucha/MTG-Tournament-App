@@ -1,4 +1,5 @@
 "use client"
+
 import { useSession } from "next-auth/react"
 
 import OuterContainer from "./components/OuterContainer";
