@@ -19,7 +19,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({ title, type, imageFile,
       </div>
 
       <div className="tournament-image-wrapper">
-        <Image
+        <Image priority={true}
           src={`/images/tournaments/${imageFile}`}
           alt={title}
           width={300}
