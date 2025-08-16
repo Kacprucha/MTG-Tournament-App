@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import TournamentCard from "./TournamentCard";
 import OuterContainer from "./OuterContainer";
 import Button from "./Button";
+import { useRouter } from 'next/navigation';
 
 interface Tournament {
   id: number;
@@ -114,6 +115,7 @@ export default function TournamentsGrid () {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const router = useRouter();
   const isAdmin = session?.user?.roles?.includes("ADMIN");
   const currentUsername = session?.user?.username;
 
@@ -171,12 +173,12 @@ export default function TournamentsGrid () {
 
   const handleCardClick = (id: number) => {
     console.log(`Przechodzę do szczegółów turnieju o ID: ${id}`);
+    router.push(`/tournaments/${id}`);
   };
 
   const handleCreateClick = () => {
     console.log("Otwieranie formularza tworzenia nowego turnieju...");
-    // Tutaj w przyszłości otworzysz modal lub przejdziesz do nowej strony
-    // np. router.push('/tournaments/create');
+    router.push("/tournaments/new");
   };
 
   return (
