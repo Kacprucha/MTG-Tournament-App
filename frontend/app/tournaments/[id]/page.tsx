@@ -1,8 +1,4 @@
-import TournamentInfo from "../../components/tournament info/TournamentInfo";
-import AchievementsList from "../../components/tournament info/AchievementsList";
-import Scoreboard from "../../components/tournament info/Scoreboard";
-import OuterContainerHorizontal from "../../components/OuterContainerHorizontal";
-import AdminPanel from "@/app/components/tournament info/AdminPanel";
+import TournamentPageClient from "@/app/components/tournament info/TournamentPageClient";
 
 // Typ parametru z dynamicznego routa
 interface TournamentPageProps {
@@ -13,11 +9,11 @@ interface TournamentPageProps {
 const mockTournaments = {
   "1": {
     id: "1",
-    name: "Turniej 2",
-    type: "draft",
+    name: "Winter Championship",
+    type: "Sealed",
     addon: "dupa",
     date: "02.08.2025",
-    participants: 10,
+    participants: ["testuser", "PlayerTwo", "PlayerThree", "PlayerFour", "PlayerFive", "PlayerSix"],
     achievements: [
       "The most amount of flying creatures at any given time",
       "The most amount of mana a player can produce at a given time",
@@ -35,7 +31,7 @@ const mockTournaments = {
     type: "sealed",
     addon: "beta",
     date: "15.08.2025",
-    participants: 8,
+    participants: ["Johnny", "Timmy", "CasualCarl", "NewbieNick", "RegularRick"],
     achievements: ["Win in 2 turns", "Most creatures summoned in one turn"],
     scoreboard: [{ name: "Testowy gracz", points: 900, achievements: { 1: 3, 2: 5, 3: 0, 4: 1 } }, ],
   },
@@ -43,6 +39,7 @@ const mockTournaments = {
 
 export default async function Tournament ({ params }: TournamentPageProps) {
   const { id } = await params;
+
   const tournament = mockTournaments[id as keyof typeof mockTournaments];
 
   if (!tournament) {
@@ -53,16 +50,5 @@ export default async function Tournament ({ params }: TournamentPageProps) {
     );
   }
 
-  return (
-    <div className="min-h-screen w-full bg-[#293132] relative">
-      <OuterContainerHorizontal footer={<AdminPanel/>}>
-        {/* lewa kolumna */}
-        <TournamentInfo tournament={tournament} />
-        {/* środek */}
-        <AchievementsList achievements={tournament.achievements} />
-        {/* prawa kolumna */}
-        <Scoreboard scoreboard={tournament.scoreboard} achievements={tournament.achievements}/>
-      </OuterContainerHorizontal>
-    </div>
-  );
+  return <TournamentPageClient tournament={tournament} />;
 }
