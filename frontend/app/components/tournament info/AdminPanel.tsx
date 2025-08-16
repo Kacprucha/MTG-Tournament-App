@@ -18,9 +18,9 @@ const AdminPanel = () => {
 
   return (
     <div className="flex gap-4">
-      <Button text="Edytuj Turniej" onClick={handleEdit} />
-      <Button text="Zarządzaj Graczami" onClick={handleManagePlayers} />
-      <Button text="Zakończ Turniej" onClick={handleEndTournament} />
+      <Button text="Opublikuj" onClick={handleEdit} />
+      <Button text="Wystartuj" onClick={handleManagePlayers} />
+      <Button text="Zakończ" onClick={handleEndTournament} />
     </div>
   );
 };
