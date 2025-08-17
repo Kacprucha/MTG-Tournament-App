@@ -4,6 +4,7 @@ import { useSession, signIn, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Button from "./Button"
 import UserIcon from "./UserIcon"
+import { useTournament } from '@/context/TournamentContext';
 
 export default function Navbar() {
   const { data: session, status } = useSession()
@@ -11,6 +12,8 @@ export default function Navbar() {
 
   const userName = session?.user?.name
   const isAdmin = session?.user?.roles?.includes("ADMIN")
+  const { tournamentName } = useTournament();
+  const tournamentNameLable = tournamentName || "-";
 
   // --- Definicje dynamicznych funkcji dla przycisków ---
 
@@ -81,7 +84,7 @@ export default function Navbar() {
         <div className="flex justify-end items-center">
             {session && (
                 <span className="text-xl self-center mr-5">
-                    {isAdmin ? "- | Admin" : `${userName}`}
+                    {isAdmin ? `${tournamentNameLable} | Admin` : `${userName}`}
                 </span>
             )}
             <UserIcon />

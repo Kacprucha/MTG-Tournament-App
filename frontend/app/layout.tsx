@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Kanit } from "next/font/google";
 import "./globals.css";
 import Providers from "./components/Providers"
 import Navbar from "./components/Navbar";
+import { TournamentProvider } from "@/context/TournamentContext";
+import { SessionWatcher } from "./components/SessionWatcher";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,8 +36,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <Navbar /> 
-          {children}
+          <TournamentProvider>
+            <SessionWatcher/>
+            <Navbar /> 
+            {children}
+          </TournamentProvider>
         </Providers>
       </body>
     </html>
