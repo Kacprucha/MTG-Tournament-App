@@ -58,8 +58,6 @@ export const TournamentProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-
-// 4. Tworzymy własny hook - ułatwi on korzystanie z kontekstu w innych komponentach
 export const useTournament = () => {
   const context = useContext(TournamentContext);
   if (context === undefined) {
