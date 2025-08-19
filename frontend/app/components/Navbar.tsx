@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation"
 import Button from "./Button"
 import UserIcon from "./UserIcon"
 import { useTournament } from '@/context/TournamentContext';
+import Image from "next/image"
+import Link from "next/link"
+import NavLink from "./NavLink"
 
 export default function Navbar() {
   const { data: session, status } = useSession()
@@ -16,30 +19,6 @@ export default function Navbar() {
   const tournamentNameLable = tournamentName || "-";
 
   // --- Definicje dynamicznych funkcji dla przycisków ---
-
-  const handleCurrentGameClick = () => {
-    router.push("/current-game")
-  }
-
-  const handleLiderBoardClick = () => {
-    router.push("/leaderboard")
-  }
-
-  const handleMyStatsClick = () => {
-    if (isAdmin) {
-      router.push("/all-stats")
-    } else {
-      router.push("/my-stats")
-    }
-  }
-
-  const handleAchivementsClick = () => {
-    if (isAdmin) {
-      router.push("/achievements-admin")
-    } else {
-      router.push("/achievements")
-    }
-  }
 
   const handleLogoutClick = () => {
     if (session) {
@@ -72,13 +51,22 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {session && (
             <>
-              <Button text="Aktualna gra" onClick={handleCurrentGameClick}/>
-              <Button text="Tabela wyników" onClick={handleLiderBoardClick}/>
-              <Button text="Moje wyniki" onClick={handleMyStatsClick}/>
-              <Button text="Osiągnięcia" onClick={handleAchivementsClick}/>
+              <Link href="/" className="flex items-center gap-2">
+                <span className="text-xl font-bold">MTG App</span>
+              </Link>
+              <NavLink href="/matches/active">Aktualna gra</NavLink>
+              <NavLink href="/scoreboard">Tabela wyników</NavLink>
+              <NavLink href="/my-stats">Moje wyniki</NavLink>
+              <NavLink href="/achievements">Osiągnięcia</NavLink>
               <Button text="Wyloguj" onClick={handleLogoutClick}/>
             </>
           )}
+          {!session && (
+            <Link href="/" className="flex items-center gap-2">
+              <span className="text-xl font-bold">MTG App</span>
+            </Link>
+          )}
+          
         </div>
 
         <div className="flex justify-end items-center">
