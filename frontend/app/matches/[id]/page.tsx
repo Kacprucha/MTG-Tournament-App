@@ -6,27 +6,15 @@ import LifeCounter from "@/app/components/match/LifeCounter";
 import MatchInfo from "@/app/components/match/MatchInfo";
 import StatsPanel from "@/app/components/match/StatsPanel";
 import Timer from "@/app/components/match/Timer";
+import TournamentStageCard from "@/app/components/match/TournamentStageCard";
 import WinnerSelection from "@/app/components/match/WinnerSelectionProps";
 import OuterContainer from "@/app/components/OuterContainer";
-
-const containerStyles: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  gap: '40px',
-  padding: '50px',
-  backgroundColor: '#293132', // Ciemne tło, aby komponenty były widoczne
-  minHeight: '100vh',
-};
-
-const playerContainerStyles: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '20px'
-}
+import { useSession } from "next-auth/react";
 
 export default function MatchPage({ params }: { params: { id: string } }) {
+  const { data: session } = useSession();
+  
+  const isAdmin = session?.user?.roles?.includes("ADMIN");
   const matchId = params.id;
 
   // Tymczasowe dane - docelowo pobierane z API
@@ -38,6 +26,9 @@ export default function MatchPage({ params }: { params: { id: string } }) {
     tableNumber: 5,
     participants: ["Mateusz H", "Kacper K"],
     status: "przed rozpoczeciem",
+    type: "normal",
+    bestOf: 3,
+    matchWinner: ["Mateusz H", "Kacper K", "Mateusz H"],
   };
 
   return (
@@ -52,19 +43,35 @@ export default function MatchPage({ params }: { params: { id: string } }) {
               opponent={mockMatch.opponent}
               tableNumber={mockMatch.tableNumber}
             />
-            <ControlButtons />
+            {(mockMatch.status === "przed rozpoczeciem" || mockMatch.status === "rozpoczęty" || isAdmin) && (
+              <ControlButtons />
+            )}
           </div>
 
           {/* Środek */}
-          <div className="flex-1">
-            <StatsPanel />
-          </div>
+          {mockMatch.type === "normal" && (
+            <div className="flex-1">
+              <StatsPanel />
+            </div>
+          )}
+          {mockMatch.type !== "normal" && (
+            <div className="flex-1">
+              <TournamentStageCard 
+                stageName={mockMatch.type}
+                participants={mockMatch.participants}
+                matchWinner={mockMatch.matchWinner}
+              />
+            </div>
+          )}
+
 
           {/* Prawa sekcja */}
           <div className="flex flex-col gap-4 w-1/4">
             <Timer />
             <LifeCounter />
-            <WinnerSelection participants={mockMatch.participants} />
+            {mockMatch.type === "normal" && (
+              <WinnerSelection participants={mockMatch.participants} />
+            )}
             <GameStatus status={mockMatch.status} />
           </div>
         </div>
