@@ -22,9 +22,9 @@ const mockTournaments = {
       "The least amount of turns for a win",
     ],
     scoreboard: [
-  { name: "Dupa 123", points: 1237, achievements: { 1: 3, 2: 5, 3: 0, 4: 1 } },
-  { name: "Gracz 2", points: 1180, achievements: { 1: 1, 2: 2, 3: 4, 4: 0 } },
-],
+      { name: "Dupa 123", points: 1237, achievements: { 1: 3, 2: 5, 3: 0, 4: 1 } },
+      { name: "Gracz 2", points: 1180, achievements: { 1: 1, 2: 2, 3: 4, 4: 0 } },
+    ],
   },
   "2": {
     id: "2",
