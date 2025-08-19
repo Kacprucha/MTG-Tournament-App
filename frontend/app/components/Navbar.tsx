@@ -54,7 +54,12 @@ export default function Navbar() {
               <Link href="/" className="flex items-center gap-2">
                 <span className="text-xl font-bold">MTG App</span>
               </Link>
-              <NavLink href="/matches/active">Aktualna gra</NavLink>
+              { isAdmin && (
+                <NavLink href="/matches/admin/dashboard" >Aktualne gry</NavLink>
+              )}
+              {!isAdmin && (
+                <NavLink href="/matches/active">Aktualna gra</NavLink>
+              )}
               <NavLink href="/scoreboard">Tabela wyników</NavLink>
               <NavLink href="/my-stats">Moje wyniki</NavLink>
               <NavLink href="/achievements">Osiągnięcia</NavLink>
