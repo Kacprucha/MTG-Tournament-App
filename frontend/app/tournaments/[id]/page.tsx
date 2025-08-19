@@ -1,4 +1,5 @@
 import TournamentPageClient from "@/app/components/tournament info/TournamentPageClient";
+import Alert from "antd/es/alert/Alert";
 
 // Typ parametru z dynamicznego routa
 interface TournamentPageProps {
@@ -45,7 +46,7 @@ export default async function Tournament ({ params }: TournamentPageProps) {
   if (!tournament) {
     return (
       <div className="min-h-screen w-full bg-[#293132] flex items-center justify-center text-white">
-        <p>Turniej o id {id} nie istnieje.</p>
+        <Alert message="Brak turnieju" description="Nie wybrano żadnego turnieju." type="warning" showIcon className="mt-4" />
       </div>
     );
   }
