@@ -50,10 +50,16 @@ const AchievementsPage = () => {
         const mockTournamentStatus: TournamentStatus = String(id) === '1' ? 'zakończony' : 'w trakcie';
         
         const mockAchievements: Achievement[] = [
-          { id: 1, name: "Pierwsza Krew", price: "Booster Pack", winner: "PlayerOne" },
-          { id: 2, name: "Najwięcej punktów życia", price: "Playmata", winner: "PlayerTwo" },
-          { id: 3, name: "Mistrz Kombinacji", price: "Tokeny", winner: null },
-          { id: 4, name: "Niepokonany", price: "Specjalna karta promo", winner: "ProPlayer1" },
+          { id: 1, name: "The most amount of flying creatures at any given time", price: "Kaalia fo the vast", winner: "PlayerOne" },
+          { id: 2, name: "The most amount of mana a player can produce at a given time", price: "Maelstorm wanderer / magus lucea cane", winner: "PlayerTwo" },
+          { id: 3, name: "The most amount of damage dealt in a single instance", price: "Shorikai, genesis engine", winner: null },
+          { id: 4, name: "The least amount of turns for a win", price: "Krenko, Mob boss", winner: "ProPlayer1" },
+          { id: 5, name: "The most amount of spells cast in a single turn", price: "niv-mizzet / Kalamax, the Stormsire", winner: "Johnny" },
+          { id: 6, name: "The most amount of enchancements you control at any given time", price: "Tom Bombadil", winner: null },
+          { id: 7, name: "The total amount of permaments you sacrificed during all games", price: "Ygra, Eater of All", winner: "CasualCarl" },
+          { id: 8, name: "The most amount of role tokens attached to your creatures at any given time", price: "Morophon, the Boundless", winner: null },
+          { id: 9, name: "The most amount of permaments removed from the battlefield in a single turn", price: "Atla Palani, Nest Tender", winner: "RegularRick" },
+          { id: 10, name: "The highest amount of creatures at the battlefield at any given moment in a game", price: "Urtet, Remnant of Memnarch", winner: null },
         ];
         // --------------------------------------------------
 
