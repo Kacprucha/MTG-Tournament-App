@@ -45,7 +45,7 @@ public class MatchController
     public MatchDto create (@RequestBody @JsonView(value = Views.Post.class) MatchDto matchDto) 
     {
         log.debug("Creating match: {}", matchDto);
-        return matchService.CrateMatch(matchDto);
+        return matchService.CreateMatch(matchDto);
     }
 
     @Operation(
@@ -60,7 +60,7 @@ public class MatchController
         @RequestBody @JsonView(value = Views.Put.class) MatchDto matchDto)
     {
         log.debug("Updating match with id {}: {}", id, matchDto);
-        return matchService.UpdateMatch(matchDto);
+        return matchService.UpdateMatch(id, matchDto);
     }
 
     @Operation(
