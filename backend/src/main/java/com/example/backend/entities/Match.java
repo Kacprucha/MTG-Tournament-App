@@ -1,11 +1,10 @@
 package com.example.backend.entities;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -17,8 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapKeyClass;
-import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -76,10 +74,17 @@ public class Match
     @Builder.Default
     private List<String> gameWinners = new ArrayList<>();
 
-    @ElementCollection
-    @CollectionTable(name = "match_achievements", joinColumns = @JoinColumn(name = "match_id"))
-    @MapKeyColumn(name = "participant_keycloak_id")
-    @MapKeyClass(UUID.class)
+    @OneToMany(
+        mappedBy = "match",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
     @Builder.Default
-    private Map<UUID, Map<Long, Integer>> achievements = new HashMap<>();
+    private List<MatchAchievement> achievements = new ArrayList<>();
+
+    public void addMatchAchievement(MatchAchievement achievement) {
+        this.achievements.add(achievement);
+        achievement.setMatch(this); 
+    }
 }
