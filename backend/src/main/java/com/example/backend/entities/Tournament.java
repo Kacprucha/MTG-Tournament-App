@@ -68,23 +68,43 @@ public class Tournament
     @Builder.Default
     private List<Scoreboard> scoreboard = new ArrayList<>();
 
-    public void addMatch(Match match) {
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Achievement> achievements = new ArrayList<>();
+
+    public void addMatch(Match match) 
+    {
         matches.add(match);
         match.setTournament(this);
     }
 
-    public void removeMatch(Match match) {
+    public void removeMatch(Match match) 
+    {
         matches.remove(match);
         match.setTournament(null);
     }
 
-    public void addScoreboardEntry(Scoreboard entry) {
+    public void addScoreboardEntry(Scoreboard entry) 
+    {
         scoreboard.add(entry);
         entry.setTournament(this);
     }
 
-    public void removeScoreboardEntry(Scoreboard entry) {
+    public void removeScoreboardEntry(Scoreboard entry) 
+    {
         scoreboard.remove(entry);
         entry.setTournament(null);
+    }
+
+    public void addAchievement(Achievement achievement) 
+    {
+        achievements.add(achievement);
+        achievement.setTournament(this);
+    }
+
+    public void removeAchievement(Achievement achievement) 
+    {
+        achievements.remove(achievement);
+        achievement.setTournament(null);
     }
 }
