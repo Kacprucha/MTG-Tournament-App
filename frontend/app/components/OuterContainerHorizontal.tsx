@@ -13,7 +13,7 @@ export default function OuterContainerHorizontal({ children, footer }: OuterCont
         inset: "80px 60px 41px 60px",
       }}
     >
-      <div className="grid grid-cols-[250px_1fr_300px] gap-4 p-4 flex-grow">
+      <div className="grid grid-cols-[250px_1fr_500px] gap-4 p-4 flex-grow">
         {children}
       </div>
       {footer && (

@@ -1,55 +1,29 @@
 import TournamentPageClient from "@/app/components/tournament info/TournamentPageClient";
 import Alert from "antd/es/alert/Alert";
+import { Suspense } from "react";
 
 // Typ parametru z dynamicznego routa
 interface TournamentPageProps {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
-// Tymczasowy mock – w przyszłości tutaj podłączysz zapytanie do API
-const mockTournaments = {
-  "1": {
-    id: "1",
-    name: "Winter Championship",
-    type: "Sealed",
-    addon: "dupa",
-    date: "02.08.2025",
-    participants: ["testuser", "PlayerTwo", "PlayerThree", "PlayerFour", "PlayerFive", "PlayerSix"],
-    achievements: [
-      "The most amount of flying creatures at any given time",
-      "The most amount of mana a player can produce at a given time",
-      "The most amount of damage dealt in a single instance",
-      "The least amount of turns for a win",
-    ],
-    scoreboard: [
-      { name: "Dupa 123", points: 1237, achievements: { 1: 3, 2: 5, 3: 0, 4: 1 } },
-      { name: "Gracz 2", points: 1180, achievements: { 1: 1, 2: 2, 3: 4, 4: 0 } },
-    ],
-  },
-  "2": {
-    id: "2",
-    name: "Turniej testowy",
-    type: "sealed",
-    addon: "beta",
-    date: "15.08.2025",
-    participants: ["Johnny", "Timmy", "CasualCarl", "NewbieNick", "RegularRick"],
-    achievements: ["Win in 2 turns", "Most creatures summoned in one turn"],
-    scoreboard: [{ name: "Testowy gracz", points: 900, achievements: { 1: 3, 2: 5, 3: 0, 4: 1 } }, ],
-  },
-};
-
 export default async function Tournament ({ params }: TournamentPageProps) {
-  const { id } = await params;
+  const awaitedParams = await params;
+  const id = awaitedParams.id;
 
-  const tournament = mockTournaments[id as keyof typeof mockTournaments];
-
-  if (!tournament) {
-    return (
+  const tournamentId = parseInt(id, 10);
+  
+  if (isNaN(tournamentId)) {
+      return (
       <div className="min-h-screen w-full bg-[#293132] flex items-center justify-center text-white">
-        <Alert message="Brak turnieju" description="Nie wybrano żadnego turnieju." type="warning" showIcon className="mt-4" />
+        <Alert message="Błąd id" description="Id turnieju nie prawidłowe." type="error" showIcon className="mt-4" />
       </div>
     );
   }
 
-  return <TournamentPageClient tournament={tournament} />;
+  return (
+    <Suspense fallback={<div>Ładowanie turnieju...</div>}>
+      <TournamentPageClient tournamentId={tournamentId} />
+    </Suspense>
+  );
 }

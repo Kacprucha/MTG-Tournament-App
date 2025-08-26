@@ -1,24 +1,19 @@
+import { TournamentDetails } from "@/types/tournament";
 import { useMemo, useState } from "react";
 
 interface TournamentInfoProps {
-  tournament: {
-    name: string;
-    type: string;
-    addon: string;
-    date: string;
-    participants: string[];
-  };
+  tournament: Pick<TournamentDetails, 'name' | 'type' | 'addon' | 'date' | 'participantUsernames' > | null;
   isAdmin?: boolean;
 }
 
 export default function TournamentInfo({ tournament, isAdmin }: TournamentInfoProps) {
   const [editableData, setEditableData] = useState({
-    name: tournament.name,
-    type: tournament.type,
-    addon: tournament.addon,
+    name: tournament?.name,
+    type: tournament?.type,
+    addon: tournament?.addon,
   });
 
-  const participantsCount = useMemo(() => tournament.participants.length, [tournament.participants]);
+  const participantsCount = useMemo(() => tournament?.participantUsernames.length, [tournament?.participantUsernames]);
 
   const handleChange = (field: keyof typeof editableData, value: string) => {
     setEditableData((prev) => ({ ...prev, [field]: value }));
@@ -71,17 +66,17 @@ export default function TournamentInfo({ tournament, isAdmin }: TournamentInfoPr
           <p>
             <strong>Nazwa turnieju:</strong>
             <br />
-            <span className="text-cyan-400">{tournament.name}</span>
+            <span className="text-cyan-400">{tournament?.name}</span>
           </p>
           <p>
             <strong>Typ rozgrywki:</strong>
             <br />
-            <span className="text-cyan-400">{tournament.type}</span>
+            <span className="text-cyan-400">{tournament?.type}</span>
           </p>
           <p>
             <strong>Rozgrywany dodatek:</strong>
             <br />
-            <span className="text-cyan-400">{tournament.addon}</span>
+            <span className="text-cyan-400">{tournament?.addon}</span>
           </p>
         </>
         )}
@@ -89,7 +84,7 @@ export default function TournamentInfo({ tournament, isAdmin }: TournamentInfoPr
         <p>
          <strong>Data rozgrywek:</strong>
          <br />
-         <span className="text-cyan-400">{tournament.date}</span>
+         <span className="text-cyan-400">{tournament?.date}</span>
        </p>
        <p>
          <strong>Ilość uczestników:</strong>
