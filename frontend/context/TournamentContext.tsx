@@ -1,11 +1,13 @@
 "use client";
 
+import { TournamentStatus } from '@/types/enums';
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 interface TournamentContextType {
   tournamentId: number | null;
   tournamentName: string | null;
-  setCurrentTournament: (id: number | null, name: string | null) => void;
+  tournamentStatus: TournamentStatus | null;
+  setCurrentTournament: (id: number | null, name: string | null, status: TournamentStatus | null) => void;
 }
 
 const TournamentContext = createContext<TournamentContextType | undefined>(undefined);
@@ -13,6 +15,7 @@ const TournamentContext = createContext<TournamentContextType | undefined>(undef
 export const TournamentProvider = ({ children }: { children: ReactNode }) => {
   const [tournamentId, setTournamentId] = useState<number | null>(null);
   const [tournamentName, setTournamentName] = useState<string | null>(null);
+  const [tournamentStatus, setTournamentStatus] = useState<TournamentStatus | null>(null);
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -21,11 +24,15 @@ export const TournamentProvider = ({ children }: { children: ReactNode }) => {
     try {
       const savedId = localStorage.getItem('tournamentId');
       const savedName = localStorage.getItem('tournamentName');
+      const savedStatus = localStorage.getItem('tournamentStatus');
       if (savedId) {
         setTournamentId(JSON.parse(savedId));
       }
       if (savedName) {
         setTournamentName(savedName);
+      }
+      if (savedStatus && Object.values(TournamentStatus).includes(savedStatus as TournamentStatus)) {
+        setTournamentStatus(savedStatus as TournamentStatus);
       }
     } catch (error) {
       console.error("Failed to parse tournament data from localStorage", error);
@@ -34,22 +41,25 @@ export const TournamentProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (isMounted) {
-      if (tournamentId !== null && tournamentName !== null) {
+      if (tournamentId !== null && tournamentName !== null && tournamentStatus !== null) {
         localStorage.setItem('tournamentId', JSON.stringify(tournamentId));
         localStorage.setItem('tournamentName', tournamentName);
+        localStorage.setItem('tournamentStatus', tournamentStatus);
       } else {
         localStorage.removeItem('tournamentId');
         localStorage.removeItem('tournamentName');
+        localStorage.removeItem('tournamentStatus');
       }
     }
-  }, [tournamentId, tournamentName, isMounted]);
+  }, [tournamentId, tournamentName, tournamentStatus, isMounted]);
 
-  const setCurrentTournament = (id: number | null, name: string | null) => {
+  const setCurrentTournament = (id: number | null, name: string | null, status: TournamentStatus | null) => {
     setTournamentId(id);
     setTournamentName(name);
+    setTournamentStatus(status);
   };
 
-  const value = { tournamentId, tournamentName, setCurrentTournament };
+  const value = { tournamentId, tournamentName, tournamentStatus, setCurrentTournament };
 
   return (
     <TournamentContext.Provider value={value}>
