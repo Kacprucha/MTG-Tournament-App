@@ -20,17 +20,32 @@ export default function Navbar() {
 
   // --- Definicje dynamicznych funkcji dla przycisków ---
 
-  const handleLogoutClick = () => {
-    if (session) {
-      signOut({ redirect: false });
+  const handleLogoutClick = async  () => {
+    if (session?.idToken) {
+      const issuerUrl = process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER;
+      const clientId = process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID;
+      const postLogoutRedirectUri = "http://localhost:3000/logout-callback";
 
-      const logoutUrl = new URL("http://localhost:8443/realms/app/protocol/openid-connect/logout");
-      logoutUrl.searchParams.set("id_token_hint", session.idToken ? session.idToken : "");
-      logoutUrl.searchParams.set("post_logout_redirect_uri", window.location.origin);
+      if (!issuerUrl) {
+        const { signOut } = require("next-auth/react");
+        signOut({ callbackUrl: postLogoutRedirectUri });
+        return;
+      }
       
-      window.location.href = logoutUrl.toString();
+      let logoutUrl = `${issuerUrl}/protocol/openid-connect/logout?post_logout_redirect_uri=${encodeURIComponent(postLogoutRedirectUri)}`;
+
+      if (session?.idToken) {
+        logoutUrl += `&id_token_hint=${session.idToken}`;
+        
+        if (clientId) {
+          logoutUrl += `&client_id=${clientId}`;
+        }
+      }
+
+      window.location.href = logoutUrl;
+      
     }
-  }
+  };
 
   // --- Renderowanie komponentu ---
 
