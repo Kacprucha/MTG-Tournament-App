@@ -2,6 +2,7 @@ package com.example.backend.dto;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.example.backend.entities.MatchStatus;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -50,13 +51,21 @@ public class MatchDto
     @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
     Integer bestOf;
 
-    @Schema(description = "List of participants")
-    @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
-    List<ParticipantDto> participants;
+    @Schema(description = "List of participant Keycloak IDs")
+    @JsonView({Views.Get.class, Views.Post.class})
+    private List<UUID> participantIds;
 
-    @Schema(description = "Winer of the match")
+    @Schema(description = "List of participant usernames")
+    @JsonView({Views.Get.class, Views.Post.class})
+    private List<String> participantUsernames;
+
+    @Schema(description = "Keycloak ID of the winner")
     @JsonView({Views.Get.class, Views.Put.class})
-    ParticipantDto winner;
+    private UUID winnerId;
+
+    @Schema(description = "Username of the winner")
+    @JsonView({Views.Get.class, Views.Post.class})
+    private String winnerUsername;
 
     @Schema(description = "List of match winners")
     @JsonView({Views.Get.class, Views.Put.class})

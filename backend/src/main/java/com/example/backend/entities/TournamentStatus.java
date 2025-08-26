@@ -1,9 +1,10 @@
 package com.example.backend.entities;
 
-public enum MatchStatus 
+public enum TournamentStatus 
 {
     PENDING,
+    PUBLISHED,
     IN_PROGRESS,
-    COMPLETED,
+    FINISHED,
     CANCELLED
 }

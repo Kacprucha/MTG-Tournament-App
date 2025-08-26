@@ -2,16 +2,38 @@ package com.example.backend.dto;
 
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
+public class ParticipantDto 
+{
+    private UUID keycloakId;
+    private String username;
 
-@Value
-@Builder
-@Jacksonized
-@AllArgsConstructor
-public class ParticipantDto {
-    UUID keycloakId;
-    String username;
+    public ParticipantDto() 
+    {
+    }
+
+    public ParticipantDto(UUID keycloakId, String username) 
+    {
+        this.keycloakId = keycloakId;
+        this.username = username;
+    }
+
+    public UUID getKeycloakId() 
+    {
+        return keycloakId;
+    }
+
+    public String getUsername() 
+    {
+        return username;
+    }
+
+    public void setKeycloakId(UUID keycloakId) 
+    {
+        this.keycloakId = keycloakId;
+    }
+
+    public void setUsername(String username) 
+    {
+        this.username = username;
+    }
 }

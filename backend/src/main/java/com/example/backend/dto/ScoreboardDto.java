@@ -1,6 +1,7 @@
 package com.example.backend.dto;
 
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -20,13 +21,17 @@ public class ScoreboardDto
     @JsonView(Views.Get.class)
     private Long id;
 
-    @Schema(description = "Participant details")
+    @Schema(description = "Keycloak ID of the participant")
     @JsonView(Views.Get.class)
-    private ParticipantDto participant;
+    private UUID userKeycloakId;
+
+    @Schema(description = "Username of the participant")
+    @JsonView(Views.Get.class)
+    private String username;
 
     @Schema(description = "Total points for this participant")
     @JsonView(Views.Get.class)
-    private Integer points;
+    private Float points;
     
     @Schema(description = "Map of achievements for this participant (AchievementID -> Value)")
     @JsonView(Views.Get.class)

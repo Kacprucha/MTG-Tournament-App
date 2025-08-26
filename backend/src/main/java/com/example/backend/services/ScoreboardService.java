@@ -1,5 +1,6 @@
 package com.example.backend.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,20 +24,20 @@ public class ScoreboardService
 {
     private final ScoreboardRepository scoreboardRepository;
 
-    private static final int POINTS_FOR_WIN = 1;
+    private static final float POINTS_FOR_WIN = 1f;
 
     public void initializeScoreboardForTournament(Tournament tournament) 
     {
         for (int i = 0; i < tournament.getParticipantsIds().size(); i++) 
         {
-            UUID participantId = tournament.getParticipantsIds().get(i);
-            String participantUsername = tournament.getParticipantsUsernames().get(i);
+            UUID participantId = new ArrayList<>(tournament.getParticipantsIds()).get(i);
+            String participantUsername = new ArrayList<>(tournament.getParticipantsUsernames()).get(i);
 
             Scoreboard entry = Scoreboard.builder()
                     .tournament(tournament)
                     .userKeycloakId(participantId)
                     .username(participantUsername)
-                    .points(0)
+                    .points(0f)
                     .achievements(new HashMap<>())
                     .build();
             
@@ -60,7 +61,7 @@ public class ScoreboardService
 
 
     // Metody pomocnicze
-    private void updatePointsForPlayer(Long tournamentId, UUID playerId, int pointsToAdd) 
+    private void updatePointsForPlayer(Long tournamentId, UUID playerId, float pointsToAdd) 
     {
         scoreboardRepository.findByTournamentIdAndUserKeycloakId(tournamentId, playerId)
             .ifPresent(entry -> {

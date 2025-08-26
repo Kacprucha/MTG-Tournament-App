@@ -13,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapKey;
 import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -40,10 +39,10 @@ public class Scoreboard
     @JoinColumn(name = "tournament_id", nullable = false)
     private Tournament tournament;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private UUID userKeycloakId;
     private String username;
-    private Integer points;
+    private Float points;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "scoreboard_achievements", joinColumns = @JoinColumn(name = "scoreboard_id"))

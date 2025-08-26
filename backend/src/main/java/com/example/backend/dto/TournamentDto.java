@@ -2,7 +2,9 @@ package com.example.backend.dto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
+import com.example.backend.entities.TournamentStatus;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,6 +23,10 @@ public class TournamentDto
     @JsonView({Views.Get.class, Views.Put.class})
     private Long id;
 
+    @Schema(description = "Current status of the tournament (PENDING, PUBLISHED, IN_PROGRESS, FINISHED, CANCELLED)")
+    @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
+    private TournamentStatus status;
+
     @Schema(description = "Tournament name")
     @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
     private String name;
@@ -37,15 +43,23 @@ public class TournamentDto
     @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
     private LocalDate date;
 
-    @Schema(description = "List of participant Keycloak IDs and usernames")
-    @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
-    private List<ParticipantDto> participants;
+    @Schema(description = "List of participant Keycloak IDs")
+    @JsonView({Views.Get.class, Views.Put.class})
+    private List<UUID> participantIds;
+
+    @Schema(description = "List of participant usernames")
+    @JsonView({Views.Get.class, Views.Put.class})
+    private List<String> participantUsernames;
 
     @Schema(description = "List of matches in the tournament")
-    @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
+    @JsonView({Views.Get.class, Views.Put.class})
     private List<MatchDto> matches;
 
     @Schema(description = "List of scoreboards for the tournament")
-    @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
-    private List<ScoreboardDto> scoreboards;
+    @JsonView({Views.Get.class, Views.Put.class})
+    private List<ScoreboardDto> scoreboard;
+
+    @Schema(description = "List of achievements for the tournament")
+    @JsonView({Views.Get.class, Views.Put.class})
+    private List<AchievementDto> achievements;
 }

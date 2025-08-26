@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.dto.MatchDto;
-import com.example.backend.dto.ParticipantDto;
 import com.example.backend.entities.Achievement;
 import com.example.backend.entities.Match;
 import com.example.backend.entities.MatchAchievement;
@@ -49,11 +48,8 @@ public class MatchService
         match.setStatus(MatchStatus.PENDING); // Zawsze zaczynamy jako pending
 
         // Ustawianie uczestników
-        if (createDto.getParticipants() != null) 
-        {
-            match.setParticipantIds(createDto.getParticipants().stream().map(ParticipantDto::getKeycloakId).collect(Collectors.toList()));
-            match.setParticipantUsernames(createDto.getParticipants().stream().map(ParticipantDto::getUsername).collect(Collectors.toList()));
-        }
+        match.setParticipantIds(createDto.getParticipantIds());
+        match.setParticipantUsernames(createDto.getParticipantUsernames());
 
         Match savedMatch = matchRepository.save(match);
 

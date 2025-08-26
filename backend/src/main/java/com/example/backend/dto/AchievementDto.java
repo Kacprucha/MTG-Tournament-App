@@ -40,10 +40,10 @@ public class AchievementDto
     private AchievementAggregationType aggregationType;
 
     @Schema(description = "Keycloak ID (sub) of the winner")
-    @JsonView({Views.Get.class, Views.Post.class, Views.Put.class}) 
+    @JsonView({Views.Get.class, Views.Put.class}) 
     private UUID winnerId;
 
     @Schema(description = "Username of the winner")
-    @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
+    @JsonView({Views.Get.class, Views.Put.class})
     private String winnerUsername;
 }

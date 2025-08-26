@@ -1,5 +1,6 @@
 package com.example.backend.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -8,10 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.backend.converters.DtoConverter;
 import com.example.backend.dto.AchievementDto;
 import com.example.backend.entities.Achievement;
 import com.example.backend.entities.Tournament;
-import com.example.backend.mapping.AchievementMapper;
 import com.example.backend.repository.AchievementRepository;
 import com.example.backend.repository.TournamentRepository;
 
@@ -22,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class AchievementService 
 {
     private final AchievementRepository achievementRepository;
-    private final AchievementMapper achievementMapper;
+    //private final AchievementMapper achievementMapper;
+    private final DtoConverter dtoConverter;
     
     private final TournamentRepository tournamentRepository;
 
@@ -46,7 +48,7 @@ public class AchievementService
         
         Achievement savedAchievement = achievementRepository.save(newAchievement);
 
-        return achievementMapper.toDto(savedAchievement);
+        return dtoConverter.toAchievementDto(savedAchievement);
     }
 
     public AchievementDto getAchievementById(Long id) 
@@ -54,7 +56,7 @@ public class AchievementService
         Achievement achievement = achievementRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Achievement not found."));
         
-        return achievementMapper.toDto(achievement);
+        return dtoConverter.toAchievementDto(achievement);
     }
 
     public List<AchievementDto> findAchievementsByTournament(Long tournamentId) 
@@ -65,7 +67,7 @@ public class AchievementService
         }
 
         return achievementRepository.findByTournamentId(tournamentId).stream()
-                .map(achievementMapper::toDto)
+                .map(dtoConverter::toAchievementDto)
                 .collect(Collectors.toList());
     }
 
@@ -73,23 +75,22 @@ public class AchievementService
     {
         Achievement achievement = achievementRepository.findById(achievementId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Achievement not found."));
-    
         Tournament tournament = achievement.getTournament();
     
-        int winnerIndex = tournament.getParticipantsIds().indexOf(winnerId);
+        int winnerIndex = new ArrayList<>(tournament.getParticipantsIds()).indexOf(winnerId);
 
         if (winnerIndex == -1) 
         {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Winner is not a participant of this tournament.");
         }
     
-        String winnerUsername = tournament.getParticipantsUsernames().get(winnerIndex);
+        String winnerUsername = new ArrayList<>(tournament.getParticipantsUsernames()).get(winnerIndex);
     
         achievement.setWinnerKeycloakId(winnerId);
         achievement.setWinnerUsername(winnerUsername);
     
         Achievement updatedAchievement = achievementRepository.save(achievement);
-        return achievementMapper.toDto(updatedAchievement);
+        return dtoConverter.toAchievementDto(updatedAchievement);
     }
 
     public void deleteAchievement(Long id) 
