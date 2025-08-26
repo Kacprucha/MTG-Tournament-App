@@ -1,35 +1,32 @@
 "use client";
 
+import { Achievement, ScoreboardEntry } from "@/types/tournament";
 import { useSession } from "next-auth/react";
 import { useState, useMemo } from "react";
 
 interface ScoreboardProps {
   tournamentName: string;
-  scoreboard: {
-    name: string;
-    points: number;
-    achievements?: { [key: number]: number }; // np. { 1: 5, 2: 10 }
-  }[];
-  achievements: string[];
+  scoreboard: ScoreboardEntry[];
+  achievements: Achievement[];
 }
 
 export default function Scoreboard({ tournamentName, scoreboard, achievements }: ScoreboardProps) {
   const { data: session } = useSession();
-  const [selectedStat, setSelectedStat] = useState<string>("points");
+  const [selectedStatId, setSelectedStatId] = useState<string>("points");
 
   const isAdmin = session?.user?.roles?.includes("ADMIN");
 
-  const getStatValue = (row: typeof scoreboard[number]) => {
-    if (selectedStat === "points") {
+  const getStatValue = (row: ScoreboardEntry) => {
+    if (selectedStatId === "points") {
       return row.points;
     }
-    const achievementIndex = parseInt(selectedStat.replace("achievement-", ""), 10);
-    return row.achievements?.[achievementIndex] ?? 0;
+    return row.achievements[selectedStatId] ?? 0;
   };
 
   const sortedScoreboard = useMemo(() => {
+    if (!scoreboard) return [];
     return [...scoreboard].sort((a, b) => getStatValue(b) - getStatValue(a));
-  }, [scoreboard, selectedStat]);
+  }, [scoreboard, selectedStatId]);
 
   return (
     <div className="p-4 text-white flex flex-col">
@@ -38,8 +35,8 @@ export default function Scoreboard({ tournamentName, scoreboard, achievements }:
         <h1 className="text-xl font-bold mb-2">{tournamentName}</h1>
         {isAdmin && (
           <select
-            value={selectedStat}
-            onChange={(e) => setSelectedStat(e.target.value)}
+            value={selectedStatId}
+            onChange={(e) => setSelectedStatId(e.target.value)}
             className="bg-[#293132] border border-cyan-400 rounded px-2 py-1 text-white"
           >
             <option value="points">Punktacja</option>
@@ -59,7 +56,7 @@ export default function Scoreboard({ tournamentName, scoreboard, achievements }:
             className="flex justify-between border-b border-cyan-400 py-1"
           >
             <span>
-              {idx + 1}. {row.name}
+              {idx + 1}. {row.username}
             </span>
             <span className="font-bold">{getStatValue(row)}</span>
           </li>

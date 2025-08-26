@@ -3,55 +3,57 @@
 import OuterContainer from "@/app/components/OuterContainer";
 import ScoreboardBig from "@/app/components/scoreboardPage/ScoreboardBig";
 import { useTournament } from "@/context/TournamentContext";
+import { Achievement, ScoreboardEntry, TournamentDetails } from "@/types/tournament";
 import Alert from "antd/es/alert/Alert";
-
-// Tymczasowy mock – w przyszłości tutaj podłączysz zapytanie do API
-const mockTournaments = {
-  "1": {
-    id: "1",
-    name: "Winter Championship",
-    type: "Sealed",
-    addon: "dupa",
-    date: "02.08.2025",
-    participants: ["testuser", "PlayerTwo", "PlayerThree", "PlayerFour", "PlayerFive", "PlayerSix"],
-    achievements: [
-      "The most amount of flying creatures at any given time",
-      "The most amount of mana a player can produce at a given time",
-      "The most amount of damage dealt in a single instance",
-      "The least amount of turns for a win",
-    ],
-    scoreboard: [
-      { name: "Dupa 123", points: 1237, achievements: { 1: 3, 2: 5, 3: 0, 4: 1 } },
-      { name: "Gracz 2", points: 1180, achievements: { 1: 1, 2: 2, 3: 4, 4: 0 } },
-    ],
-  },
-  "2": {
-    id: "2",
-    name: "Turniej testowy",
-    type: "sealed",
-    addon: "beta",
-    date: "15.08.2025",
-    participants: ["Johnny", "Timmy", "CasualCarl", "NewbieNick", "RegularRick"],
-    achievements: ["Win in 2 turns", "Most creatures summoned in one turn"],
-    scoreboard: [{ name: "Testowy gracz", points: 900, achievements: { 1: 3, 2: 5, 3: 0, 4: 1 } }, ],
-  },
-};
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 export default function ScoreboardPage() {
-  const { tournamentId } = useTournament();
+  const { data: session } = useSession();
+  const { tournamentId, tournamentName } = useTournament();
   
-  const id = tournamentId !== null ? tournamentId : "0"; 
-  const tournament = mockTournaments[id as keyof typeof mockTournaments];
+  const [scoreboardData, setScoreboardData] = useState<ScoreboardEntry[]>([]);
+  const [achievementsData, setAchievementsData] = useState<Achievement[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!tournament && tournamentId !== null) {
-    return (
-      <div className="min-h-screen w-full bg-[#293132] flex items-center justify-center text-white">
-        <Alert message={"Brak komponentu"} description={ `Turniej o id ${tournamentId} nie istnieje.`} type="error" showIcon className="mt-4" />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (tournamentId && session?.accessToken) {
+      const fetchScoreboardAndAchievements = async () => {
+        try {
+          setLoading(true);
 
-  if (tournamentId === null) {
+          const apiClient = axios.create({
+            baseURL: "http://localhost:8080",
+            headers: {
+              Authorization: `Bearer ${session.accessToken}`,
+            },
+          });
+
+          const [scoreboardResponse, achievementsResponse] = await Promise.all([
+            apiClient.get<TournamentDetails>(`/tournaments/${tournamentId}`),
+            apiClient.get<Achievement[]>(`/achievements?tournamentId=${tournamentId}`)
+          ]);
+
+          setScoreboardData(scoreboardResponse.data.scoreboard);
+          setAchievementsData(achievementsResponse.data);
+          setError(null);
+
+        } catch (err: any) {
+          setError(err.response?.data?.message || "Nie udało się pobrać danych tabeli wyników.");
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchScoreboardAndAchievements();
+    } else {
+      setLoading(false);
+    }
+  }, [tournamentId, session]);
+
+  if (!tournamentId) {
     return (
       <div className="min-h-screen w-full bg-[#293132] flex items-center justify-center text-white">
         <Alert message="Brak turnieju" description="Nie wybrano żadnego turnieju." type="warning" showIcon className="mt-4" />
@@ -62,7 +64,7 @@ export default function ScoreboardPage() {
   return (
     <main className="min-h-screen w-full bg-[#293132] relative">
       <OuterContainer>
-        <ScoreboardBig tournamentName={tournament.name} scoreboard={tournament.scoreboard} achievements={tournament.achievements}/>
+        <ScoreboardBig tournamentName={tournamentName || ''} scoreboard={scoreboardData} achievements={achievementsData}/>
     </OuterContainer>
   </main>
   );
