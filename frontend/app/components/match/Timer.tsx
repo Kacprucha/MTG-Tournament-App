@@ -28,7 +28,7 @@ export default function Timer() {
   };
 
   return (
-    <div className="w-full bg-cyan-400 text-[#474044] rounded-lg p-4 text-center text-4xl font-bold">
+    <div className="w-full h-32 bg-cyan-400 text-[#474044] rounded-lg p-4 text-center content-center text-6xl font-bold">
       {formatTime(time)}
     </div>
   );
