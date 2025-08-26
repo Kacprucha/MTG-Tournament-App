@@ -1,0 +1,7 @@
+export enum TournamentStatus {
+  PENDING = 'PENDING',
+  PUBLISHED= 'PUBLISHED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  FINISHED = 'FINISHED',
+  CANCELLED = 'CANCELLED',
+}
