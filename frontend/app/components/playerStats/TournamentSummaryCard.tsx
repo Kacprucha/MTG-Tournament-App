@@ -37,7 +37,7 @@ const TournamentSummaryCard: React.FC<TournamentSummaryCardProps> = ({
       {/* Sekcja Ilość zdobytych punktów */}
       <div className="flex flex-col items-start gap-2">
         <span className="text-white font-bold">Ilość zdobytych punktów:</span>
-        <StatPill value={totalPoints} />
+        <StatPill value={Math.floor(totalPoints)} />
       </div>
     </div>
   );

@@ -5,34 +5,10 @@ import React, { useState, useEffect } from 'react';
 import { Spin, Alert } from 'antd';
 import TournamentSummaryCard from '../components/playerStats/TournamentSummaryCard';
 import PlayerStatsList from '../components/playerStats/PlayerStatsList';
-
-// --- Mockowane Dane (zgodnie z Twoją specyfikacją) ---
-const MOCK_TOURNAMENT_DETAILS = {
-  id: "1",
-  name: "Turniej 2", 
-  type: "Sealed",
-  addon: "dupa",
-  date: "02.08.2025",
-  participants: ["testuser", "Dupa 123", "Gracz 2"],
-  scoreboard: [
-    { name: "Dupa 123", points: 1237, achievements: { "1": 3, "2": 5, "3": 0, "4": 1, "5": 8 } },
-    { name: "Gracz 2", points: 1180, achievements: { "1": 1, "2": 2, "3": 4, "4": 0, "5": 2 } },
-  ],
-};
-
-const MOCK_ACHIEVEMENTS_LIST = [
-  { id: 1, name: "Ilość życia zdobytego w danej grze" },
-  { id: 2, name: "Ilość stworzonych tokenów w danej grze" },
-  { id: 3, name: "Ilość poświęconych jednostek w danej grze" },
-  { id: 4, name: "Największa ilość jednostek na bordzie w trakcie gry" },
-  { id: 5, name: "Największa ilość kart na ręce w trakcie gry" },
-];
-
-const MOCK_PLAYED_MATCHES = [
-  { matchId: 101, result: "Win" },
-  { matchId: 102, result: "Win" },
-  { matchId: 103, result: "Loss" },
-];
+import { useTournament } from '@/context/TournamentContext';
+import { useSession } from 'next-auth/react';
+import { MatchSummary, TournamentDetails } from '@/types/tournament';
+import axios, { AxiosError } from 'axios';
 
 interface SummaryData {
   tournamentName: string;
@@ -45,72 +21,100 @@ interface DetailedStat {
 }
 
 const PlayerResultsPage = () => {
+  const { tournamentId } = useTournament();
+  const { data: session } = useSession();
+
   const [summaryData, setSummaryData] = useState<SummaryData | null>(null);
   const [detailedStats, setDetailedStats] = useState<DetailedStat[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const currentPlayerName = "Dupa 123";
+  const currentPlayerName = session?.user?.username;
 
   useEffect(() => {
-    const fetchDataAndProcess = async () => {
-      try {
-        setLoading(true);
-        const tournamentData = await new Promise<typeof MOCK_TOURNAMENT_DETAILS>(resolve => 
-          setTimeout(() => resolve(MOCK_TOURNAMENT_DETAILS), 500)
-        );
-        const achievementsList = await new Promise<typeof MOCK_ACHIEVEMENTS_LIST>(resolve => 
-          setTimeout(() => resolve(MOCK_ACHIEVEMENTS_LIST), 500)
-        );
-        const playedMatchesData = await new Promise<typeof MOCK_PLAYED_MATCHES>(resolve => 
-          setTimeout(() => resolve(MOCK_PLAYED_MATCHES), 500)
-        );
+    if (tournamentId && currentPlayerName && session?.accessToken) {
+      const fetchDataAndProcess = async () => {
+        try {
+          setLoading(true);
 
-        // --- Logika Przetwarzania Danych ---
-        
-        const playerBoard = tournamentData.scoreboard.find(
-          (player) => player.name === currentPlayerName
-        );
+          const apiClient = axios.create({
+            baseURL: "http://localhost:8080",
+            headers: { Authorization: `Bearer ${session.accessToken}` },
+          });
+          
+          const [tournamentResponse, matchesResponse] = await Promise.all([
+            apiClient.get<TournamentDetails>(`/tournaments/${tournamentId}`),
+            apiClient.get<MatchSummary[]>(`/matches?tournamentId=${tournamentId}&participantUsername=${currentPlayerName}`)
+          ]);
+          
+          const tournamentData = tournamentResponse.data;
+          const achievementsList = tournamentData.achievements; 
+          const playedMatchesData = matchesResponse.data.filter(m => m.status === 'COMPLETED');
+          
+          const playerBoard = tournamentData.scoreboard.find(
+            (player) => player.username === currentPlayerName
+          );
 
-        if (!playerBoard) {
-          throw new Error(`Nie znaleziono danych dla gracza: ${currentPlayerName}`);
-        }
-
-        const summary: SummaryData = {
-          tournamentName: tournamentData.name,
-          gamesPlayed: playedMatchesData.length, 
-          totalPoints: playerBoard.points,
-        };
-        setSummaryData(summary);
-
-        const detailed: DetailedStat[] = Object.entries(playerBoard.achievements).map(
-          ([achievementId, achievementValue]) => {
-            const achievementDefinition = achievementsList.find(
-              (ach) => ach.id.toString() === achievementId
-            );
-            return {
-              label: achievementDefinition ? achievementDefinition.name : `Nieznane osiągnięcie #${achievementId}`,
-              value: achievementValue,
-            };
+          if (!playerBoard) {
+            throw new Error(`Nie znaleziono danych w tabeli wyników dla gracza: ${currentPlayerName}`);
           }
-        );
-        setDetailedStats(detailed);
 
-      } catch (err: any) {
-        setError(err.message || "Wystąpił nieoczekiwany błąd.");
-      } finally {
-        setLoading(false);
-      }
-    };
+          const summary: SummaryData = {
+            tournamentName: tournamentData.name,
+            gamesPlayed: playedMatchesData.length,
+            totalPoints: playerBoard.points,
+          };
+          setSummaryData(summary);
+          
+          const detailed: DetailedStat[] = Object.entries(playerBoard.achievements).map(
+            ([achievementId, achievementValue]) => {
+              const achievementDefinition = achievementsList.find(
+                (ach) => ach.id.toString() === achievementId
+              );
+              return {
+                label: achievementDefinition ? achievementDefinition.name : `Nieznane osiągnięcie #${achievementId}`,
+                value: achievementValue,
+              };
+            }
+          );
+          setDetailedStats(detailed);
+          setError(null);
 
-    fetchDataAndProcess();
-  }, [currentPlayerName]); 
+        } catch (err: unknown) {
+          if (err instanceof AxiosError) {
+            setError(err.response?.data?.message || "Wystąpił nieoczekiwany błąd podczas pobierania danych.");
+          } else {
+            setError("Wystąpił nieoczekiwany błąd.");
+          }
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchDataAndProcess();
+    } else {
+      setLoading(false); 
+    }
+  }, [tournamentId, currentPlayerName, session]);
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><Spin size="large" /></div>;
   }
   if (error) {
-    return <Alert message="Błąd" description={error} type="error" showIcon />;
+    return (
+      <div className="min-h-screen w-full bg-[#293132] flex items-center justify-center text-white">
+        <Alert message="Błąd" description={error} type="error" showIcon />
+      </div>
+    );
+  }
+
+  if (!tournamentId || !currentPlayerName) {
+    return (
+      <div className="min-h-screen w-full bg-[#293132] flex items-center justify-center text-white">
+        <Alert message="Brak danych" description="Nie wybrano aktywnego turnieju lub nie jesteś zalogowany." type="warning" showIcon />
+      </div>
+    );
   }
 
   if (!summaryData || !detailedStats) {
