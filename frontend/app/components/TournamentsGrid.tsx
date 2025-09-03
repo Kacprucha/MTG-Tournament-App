@@ -1,8 +1,8 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Row, Col, Spin, Alert } from "antd"; // Importujemy komponenty z Ant Design
-import axios from "axios";
+import { Row, Col, Spin, Alert, message } from "antd"; // Importujemy komponenty z Ant Design
+import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import TournamentCard from "./TournamentCard";
 import OuterContainer from "./OuterContainer";
@@ -15,7 +15,7 @@ interface Tournament {
   name: string;
   type: string;
   status: TournamentStatus;
-  participants?: string[];
+  participantUsernames?: string[];
 }
 
 export default function TournamentsGrid () {
@@ -26,7 +26,8 @@ export default function TournamentsGrid () {
 
   const router = useRouter();
   const isAdmin = session?.user?.roles?.includes("ADMIN");
-  const currentUsername = session?.user?.username;
+  const currentUsername = session?.user?.name;
+  const usernameForValidation = session?.user?.username;
 
   useEffect(() => {
     if (session?.accessToken) {
@@ -41,7 +42,9 @@ export default function TournamentsGrid () {
               },
             }
           );
+          
           setTournaments(response.data);
+
           setError(null);
         } catch (err) {
           setError("Nie udało się pobrać danych o turniejach.");
@@ -67,7 +70,11 @@ export default function TournamentsGrid () {
 
   // Renderowanie błędu
   if (error) {
-    return <Alert message="Błąd" description={error} type="error" showIcon />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Alert message="Błąd" description={error} type="error" showIcon />
+      </div>
+      );
   }
 
   const handleShowClick = (id: number) => {
@@ -75,9 +82,26 @@ export default function TournamentsGrid () {
     router.push(`/tournaments/${id}`);
   };
 
-  const handleJoinClick = (id: number) => {
-    console.log(`Przechodzę do szczegółów turnieju o ID: ${id}`);
-    router.push(`/tournaments/${id}`);
+  const handleJoinTournament = async (tournamentId: number) => {
+    if (!session?.accessToken) {
+      message.error("Musisz być zalogowany, aby dołączyć.");
+      return;
+    }
+    try {
+      await axios.post(
+        `http://localhost:8080/tournaments/${tournamentId}/join`,
+        {}, // Puste body, bo dane użytkownika są w tokenie
+        { headers: { Authorization: `Bearer ${session.accessToken}` } }
+      );
+      console.log(`Przechodzę do szczegółów turnieju o ID: ${tournamentId}`);
+      router.push(`/tournaments/${tournamentId}`);
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        message.error(err.response?.data?.message || "Nie udało się dołączyć do turnieju.");
+      } else {
+        message.error("Wystąpił nieoczekiwany błąd.");
+      }
+    }
   };
 
   const handleCreateClick = () => {
@@ -92,7 +116,7 @@ export default function TournamentsGrid () {
           <Row gutter={[16, 16]}> 
             {tournaments.map((tournament) => (
               <Col key={tournament.id} xs={24} sm={12} md={8} lg={6} xl={4}>
-                {(tournament.status == TournamentStatus.FINISHED || tournament.participants?.includes(currentUsername) || isAdmin) && (
+                {(tournament.status == TournamentStatus.FINISHED || tournament.status == TournamentStatus.IN_PROGRESS || (tournament.status == TournamentStatus.PUBLISHED && tournament.participantUsernames?.includes(usernameForValidation)) || isAdmin) ? (
                   <TournamentCard
                     title={tournament.name}
                     type={tournament.type}
@@ -100,14 +124,15 @@ export default function TournamentsGrid () {
                     buttonText={"Zobacz"}
                     onButtonClick={() => handleShowClick(tournament.id)}
                   />
-                )}
-                {(tournament.status == TournamentStatus.PUBLISHED && !tournament.participants?.includes(currentUsername)) && (
+                )
+                : 
+                (
                   <TournamentCard
                     title={tournament.name}
                     type={tournament.type}
                     imageFile={"mtg_logo.svg"}
                     buttonText={"Zapisz się"}
-                    onButtonClick={() => handleJoinClick(tournament.id)}
+                    onButtonClick={() => handleJoinTournament(tournament.id)}
                   />
                 )}
               </Col>
