@@ -1,17 +1,19 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 import OuterContainerHorizontal from "../OuterContainerHorizontal";
 import AdminPanel from "./AdminPanel";
 import TournamentInfo from "./TournamentInfo";
 import AchievementsList from "./AchievementsList";
 import Scoreboard from "./Scoreboard";
 import { useTournament } from '@/context/TournamentContext';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TournamentDetails } from "@/types/tournament";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Alert from "antd/es/alert/Alert";
 import { Spin } from "antd";
+import { TournamentStatus } from "@/types/enums";
 
 interface TournamentPageClientProps {
   tournamentId: number;
@@ -19,15 +21,18 @@ interface TournamentPageClientProps {
 
 export default function TournamentPageClient ({ tournamentId: tournamentID }: TournamentPageClientProps) {
   const { data: session } = useSession();
+  const router = useRouter(); 
   const { setCurrentTournament } = useTournament();
 
   const [tournament, setTournament] = useState<TournamentDetails | null>(null);
+  const [editedTournament, setEditedTournament] = useState<TournamentDetails | null>(null); 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const isAdmin = session?.user?.roles?.includes("ADMIN");
 
-  useEffect(() => {
+  const fetchTournamentDetails = useCallback(async () => {
     if (tournamentID && session?.accessToken) {
       const fetchTournamentDetails = async () => {
         try {
@@ -50,11 +55,16 @@ export default function TournamentPageClient ({ tournamentId: tournamentID }: To
           const response = await tournamentRequest;
           
           setTournament(response.data);
+          setEditedTournament(response.data);
           setCurrentTournament(response.data.id, response.data.name, response.data.status)
           setError(null);
 
-        } catch (err: any) {
-          setError(err.response?.data?.message || "Nie udało się pobrać danych turnieju.");
+        } catch (err: unknown) {
+          if (err instanceof AxiosError) {
+            setError(err.response?.data?.message || "Nie udało się pobrać danych turnieju.");
+          } else {
+            setError("Wystąpił nieoczekiwany błąd.");
+          }
           console.error(err);
         } finally {
           setLoading(false);
@@ -65,7 +75,26 @@ export default function TournamentPageClient ({ tournamentId: tournamentID }: To
     } else if (!session) {
       setLoading(false); 
     }
-  }, [tournamentID, session, setCurrentTournament]);
+  }, [tournamentID, session, setCurrentTournament]); 
+  
+  useEffect(() => {
+    fetchTournamentDetails();
+  }, [fetchTournamentDetails, refreshTrigger]);
+
+  const handleFieldChange = (field: keyof TournamentDetails, value: string) => {
+    if (editedTournament) {
+      setEditedTournament({ ...editedTournament, [field]: value });
+    }
+  };
+
+  const handleDeletionSuccess = () => {
+    setCurrentTournament(null, null, null); 
+    router.push('/'); 
+  };
+
+  const handleActionSuccess = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><Spin size="large" /></div>;
@@ -88,9 +117,15 @@ export default function TournamentPageClient ({ tournamentId: tournamentID }: To
 
   return (
     <div className="min-h-screen w-full bg-[#293132] relative">
-      <OuterContainerHorizontal footer={isAdmin ? <AdminPanel/> : undefined}>
+      <OuterContainerHorizontal footer={isAdmin ? 
+        <AdminPanel 
+          tournamentData={editedTournament!}
+          onTournamentDeleted={handleDeletionSuccess}
+          onActionSuccess={handleActionSuccess}
+        /> 
+      : undefined}>
         {/* lewa kolumna */}
-        <TournamentInfo tournament={tournament} isAdmin={isAdmin} />
+        <TournamentInfo tournament={tournament} isAdmin={isAdmin} onFieldChange={handleFieldChange} />
         {/* środek */}
         <AchievementsList achievements={tournament.achievements} />
         {/* prawa kolumna */}

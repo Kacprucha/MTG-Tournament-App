@@ -4,7 +4,7 @@ import { Suspense } from "react";
 
 // Typ parametru z dynamicznego routa
 interface TournamentPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function Tournament ({ params }: TournamentPageProps) {

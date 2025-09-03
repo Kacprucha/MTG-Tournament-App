@@ -1,76 +1,122 @@
 "use client";
 
+import { Button, DatePicker, Form, Input, Select } from "antd";
+import Alert from "antd/es/alert/Alert";
+import axios, { AxiosError } from "axios";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import dayjs from 'dayjs';
+import { TournamentStatus } from "@/types/enums";
+
+const { Option } = Select;
+
+interface TournamentFormValues {
+  name: string;
+  type: string;
+  addon: string;
+  date: dayjs.Dayjs;
+}
 
 export default function NewTournamentForm() {
-  const [form, setForm] = useState({
-    name: "",
-    type: "draft",
-    addon: "",
-  });
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [form] = Form.useForm();
+
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const currentDate = new Date().toISOString().slice(0, 10);
 
-  const handleChange = (field: string, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: TournamentFormValues) => {
+    if (!session?.accessToken) {
+      setError("Brak autoryzacji. Zaloguj się ponownie.");
+      return;
+    }
 
     const payload = {
-      ...form,
-      date: currentDate,
-      participants: [],
+      name: values.name,
+      type: values.type,
+      addon: values.addon,
+      date: values.date.format('YYYY-MM-DD'),
     };
 
-    console.log("Nowy turniej:", payload);
+    setSubmitting(true);
+    setError(null);
 
-    // Tutaj wywołasz POST do API
-    // await fetch("/api/tournaments", { method: "POST", body: JSON.stringify(payload) });
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/tournaments",
+        payload,
+        { headers: { 
+          Authorization: `Bearer ${session.accessToken}`,
+          "Content-Type": "application/json" } 
+        }
+      );
+      router.push(`/tournaments/${response.data.id}`);
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        setError(err.response?.data?.message || "Wystąpił błąd podczas tworzenia turnieju.");
+      } else {
+        setError("Wystąpił nieoczekiwany błąd.");
+      }
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-[#1f2425] text-white p-6 rounded-2xl flex flex-col gap-4 w-full max-w-md">
-      <h2 className="text-2xl font-bold">Stwórz nowy turniej</h2>
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={handleSubmit}
+      className="bg-[#1f2425] text-white p-6 rounded-2xl flex flex-col gap-4 w-full max-w-md"
+      initialValues={{ type: "draft", date: dayjs() }}
+    >
+      <h2 className="text-2xl font-bold mb-6 text-center text-white">Stwórz nowy turniej</h2>
 
-      <label>
-        Nazwa turnieju:
-        <input
-          className="bg-gray-700 px-2 py-1 rounded w-full"
-          value={form.name}
-          onChange={(e) => handleChange("name", e.target.value)}
-        />
-      </label>
+      {error && <Alert message={error} type="error" closable className="mb-4" />}
 
-      <label>
-        Typ rozgrywki:
-        <select
-          className="bg-gray-700 px-2 py-1 rounded w-full"
-          value={form.type}
-          onChange={(e) => handleChange("type", e.target.value)}
-        >
-          <option value="draft">Draft</option>
-          <option value="sealed">Sealed</option>
-          <option value="commander">Commander</option>
-          <option value="modern">Modern</option>
-        </select>
-      </label>
+      <Form.Item
+        name="name"
+        label={<label style={{ color: 'white' }}>Nazwa turnieju:</label>}
+        rules={[{ required: true, message: 'Nazwa turnieju jest wymagana!' }]}
+      >
+        <Input />
+      </Form.Item>
 
-      <label>
-        Dodatek:
-        <input
-          className="bg-gray-700 px-2 py-1 rounded w-full"
-          value={form.addon}
-          onChange={(e) => handleChange("addon", e.target.value)}
-        />
-      </label>
+      <Form.Item
+        name="type"
+        label={<label style={{ color: 'white' }}>Typ rozgrywki:</label>}
+      >
+        <Select>
+          <Option value="draft">Draft</Option>
+          <Option value="sealed">Sealed</Option>
+          <Option value="commander">Commander</Option>
+          <Option value="modern">Modern</Option>
+        </Select>
+      </Form.Item>
 
-      <p>Data: <span className="font-semibold">{currentDate}</span></p>
+      <Form.Item
+        name="addon"
+        label={<label style={{ color: 'white' }}>Dodatek:</label>}
+      >
+        <Input />
+      </Form.Item>
 
-      <button type="submit" className="px-4 py-1 border border-cyan-400 text-white rounded-full text-sm font-bold hover:bg-cyan-400 hover:text-black transition">
-        Stwórz turniej
-      </button>
-    </form>
+      <Form.Item
+        name="date"
+        label={<label style={{ color: 'white' }}>Data:</label>}
+      >
+        <DatePicker style={{ width: '100%' }} />
+      </Form.Item>
+
+      <Form.Item>
+        <Button type="primary" htmlType="submit" loading={submitting} block>
+          Stwórz turniej
+        </Button>
+      </Form.Item>
+    </Form>
   );
 }
