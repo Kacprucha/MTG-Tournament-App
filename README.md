@@ -1,4 +1,8 @@
 # MTG-Tournament-App
+---
+⚠ **Important: The app is in development mode there can be crashes or some features could not work properly or at all. This disclaimer will disappear when we will be pleased with the product.**
+
+---
 Welcome to the MTG Tournament App, a full-stack application designed to manage Magic The Gathering tournaments. This application features a Java Spring Boot backend, a Next.js frontend, and uses Keycloak for authentication, all containerized with Docker.
 
 ## Table of Contents
