@@ -3,10 +3,8 @@ package com.example.backend.configuration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -60,7 +58,7 @@ public class DataLoader implements CommandLineRunner
             "QWW", 5f,
             "Marcin", 4f,
             "Albert", 4f,
-            "Seba", 4f,
+            "Seba", 1f,
             "Nikodem", 0f
         );
         
@@ -148,10 +146,10 @@ public class DataLoader implements CommandLineRunner
                                 "Total amount of cards casted from other zones than your hand", 0)
         );
         
-        Set<String> usernames = new HashSet<>(playerPoints.keySet());
-        Set<UUID> mockIds = usernames.stream()
+        List<String> usernames = new ArrayList<>(playerPoints.keySet());
+        List<UUID> mockIds = usernames.stream()
             .map(u -> UUID.randomUUID())
-            .collect(Collectors.toSet());
+            .collect(Collectors.toList());
 
         Tournament legacyTournament = Tournament.builder()
             .status(TournamentStatus.FINISHED)
@@ -163,8 +161,6 @@ public class DataLoader implements CommandLineRunner
             .participantsUsernames(usernames)
             .participantsIds(mockIds)
             .build();
-
-        log.info(legacyTournament.getParticipantsUsernames().toString());
 
         tournamentRepository.save(legacyTournament);
 
