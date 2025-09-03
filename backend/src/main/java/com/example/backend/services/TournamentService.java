@@ -2,9 +2,10 @@ package com.example.backend.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.converters.DtoConverter;
+import com.example.backend.dto.ParticipantDto;
 import com.example.backend.dto.TournamentDto;
 import com.example.backend.entities.Scoreboard;
 import com.example.backend.entities.Tournament;
@@ -33,28 +35,32 @@ public class TournamentService
         {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Tournament with this name already exists.");
         }
-        if (createDto.getParticipantIds().size() != createDto.getParticipantUsernames().size()) 
-        {
-             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Participant IDs and usernames lists must have the same size.");
-        }
 
-        Tournament tournament = Tournament.builder()
-                .name(createDto.getName())
-                .type(createDto.getType())
-                .addon(createDto.getAddon())
-                .date(createDto.getDate())
-                .status(TournamentStatus.PENDING)
-                .isLegacy(false) 
-                .participantsIds(new HashSet<>(createDto.getParticipantIds()))
-                .participantsUsernames(new HashSet<>(createDto.getParticipantUsernames()))
-                .matches(new HashSet<>())
-                .scoreboard(new HashSet<>())
-                .achievements(new HashSet<>())
-                .build();
+        Tournament tournament = new Tournament();
+    
+        tournament.setName(createDto.getName());
+        tournament.setType(createDto.getType());
+        tournament.setAddon(createDto.getAddon());
+        tournament.setDate(createDto.getDate());
+        tournament.setStatus(TournamentStatus.PENDING);
+        tournament.setLegacy(false);
+        tournament.setParticipantsIds(new ArrayList<>());
+        tournament.setParticipantsUsernames(new ArrayList<>());
+        
+        if (createDto.getParticipantIds() != null && createDto.getParticipantUsernames() != null) 
+        {
+            if (createDto.getParticipantIds().size() != createDto.getParticipantUsernames().size()) 
+            {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Participant IDs and usernames lists must have the same size.");
+            }
+
+            tournament.setParticipantsIds(createDto.getParticipantIds());
+            tournament.setParticipantsUsernames(createDto.getParticipantUsernames());
+        }
         
         Tournament savedTournament = tournamentRepository.save(tournament);
         
-        initializeScoreboard(tournament);
+        initializeScoreboard(savedTournament);
         
         savedTournament = tournamentRepository.save(savedTournament);
 
@@ -81,9 +87,11 @@ public class TournamentService
         Tournament existingTournament = tournamentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tournament not found with id: " + id));
 
-        if (updateDto.getName() != null && !updateDto.getName().equals(existingTournament.getName())) {
+        if (updateDto.getName() != null && !updateDto.getName().equals(existingTournament.getName())) 
+        {
             Optional<Tournament> tournamentWithSameName = tournamentRepository.findByName(updateDto.getName());
-            if (tournamentWithSameName.isPresent()) {
+            if (tournamentWithSameName.isPresent()) 
+            {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Tournament name '" + updateDto.getName() + "' is already taken.");
             }
 
@@ -110,17 +118,100 @@ public class TournamentService
         tournamentRepository.deleteById(id);
     }
 
+    public TournamentDto updateStatus(Long id, TournamentStatus newStatus) 
+    {
+        Tournament tournament = tournamentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tournament not found with id: " + id));
+        
+        boolean changeLegal = false;
+
+        switch (tournament.getStatus()) 
+        {
+            case PENDING:
+                if (newStatus == TournamentStatus.PUBLISHED) {
+                    changeLegal = true;
+                }
+                break;
+            case PUBLISHED:
+                if (newStatus == TournamentStatus.IN_PROGRESS) {
+                    changeLegal = true;
+                }
+                break;
+            case IN_PROGRESS:
+                if (newStatus == TournamentStatus.FINISHED) {
+                    changeLegal = true;
+                }
+                break;
+        }
+
+        if (!changeLegal) 
+        {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Tournament status '" + newStatus.toString() + "' is not correct fot next stage for status '" + tournament.getStatus().toString() + "'.");
+        }
+    
+        tournament.setStatus(newStatus);
+        return dtoConverter.toTournamentDto(tournament); 
+    }
+
+    public void addParticipant(Long tournamentId, UUID userId, String username) 
+    {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tournament not found"));
+
+        if (tournament.getStatus() != TournamentStatus.PENDING && tournament.getStatus() != TournamentStatus.PUBLISHED) 
+        {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot join a tournament that is in progress or finished.");
+        }
+
+        if (tournament.getParticipantsIds().contains(userId)) 
+        {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User has already joined this tournament.");
+        }
+
+        tournament.getParticipantsIds().add(userId);
+        tournament.getParticipantsUsernames().add(username);
+        
+        tournamentRepository.save(tournament);
+    }
+
+    public List<ParticipantDto> getParticipants(Long tournamentId) 
+    {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tournament not found"));
+    
+        if (tournament.getParticipantsUsernames() == null) return new ArrayList<>();
+    
+        List<String> usernames = tournament.getParticipantsUsernames();
+        List<UUID> ids = tournament.getParticipantsIds();
+    
+        List<ParticipantDto> participants = new ArrayList<>();
+        for (int i = 0; i < usernames.size(); i++) 
+        {
+            participants.add(new ParticipantDto(ids.get(i), usernames.get(i)));
+        }
+        
+        return participants;
+    }
+
     // Metody Pomocnicze 
     
     private void initializeScoreboard(Tournament tournament) 
     {
         if (tournament.getParticipantsIds() == null) return;
 
-        for (int i = 0; i < tournament.getParticipantsIds().size(); i++) 
+        Map<String, UUID> idsByUsername = new HashMap<>();
+        List<String> usernames = new ArrayList<>(tournament.getParticipantsUsernames());
+        List<UUID> ids = new ArrayList<>(tournament.getParticipantsIds());
+        for (int i = 0; i < usernames.size(); i++) 
+        {
+            idsByUsername.put(usernames.get(i), ids.get(i));
+        }
+
+        for (String username : tournament.getParticipantsUsernames()) 
         {
             Scoreboard entry = Scoreboard.builder()
-                .userKeycloakId(new ArrayList<>(tournament.getParticipantsIds()).get(i))
-                .username(new ArrayList<>(tournament.getParticipantsUsernames()).get(i))
+                .userKeycloakId(idsByUsername.get(username))
+                .username(username)
                 .points(0f)
                 .achievements(new HashMap<>())
                 .build();
