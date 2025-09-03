@@ -24,12 +24,16 @@ export interface Achievement {
   winnerUsername?: string;
 }
 
-interface MatchSummary {
+export interface MatchSummary {
     id: number;
     round: number;
     status: string;
+    type: string;
+    bestOf: number;
     participantUsernames: string[];
     winnerUsername?: string;
+    gameWinners?: string[]
+    achievements: { [achievementId: string]: number };
 }
 
 export interface TournamentDetails {
@@ -45,4 +49,11 @@ export interface TournamentDetails {
   scoreboard: ScoreboardEntry[];
   matches: MatchSummary[]; 
   achievements: Achievement[];
+}
+
+export interface CreateTournamentRequest {
+  name: string;
+  type: string;
+  addon: string;
+  date: string; 
 }
