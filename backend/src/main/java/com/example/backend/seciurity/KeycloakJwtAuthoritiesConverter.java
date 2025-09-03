@@ -16,10 +16,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
-
 @Component
-@RequiredArgsConstructor
 public class KeycloakJwtAuthoritiesConverter implements Converter<Jwt, Collection<? extends GrantedAuthority>> 
 {
     private static final String REALM_ACCESS = "realm_access";
@@ -28,9 +25,16 @@ public class KeycloakJwtAuthoritiesConverter implements Converter<Jwt, Collectio
     private static final String ROLE_PREFIX = "ROLE_";
 
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter;
+    private final String clientId;
 
-    @Value("${app.jwt.resource-client-id}")
-    private String clientId;
+    public KeycloakJwtAuthoritiesConverter(
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter,
+        @Value("${app.jwt.resource-client-id}") String clientId
+    ) 
+    {
+        this.jwtGrantedAuthoritiesConverter = jwtGrantedAuthoritiesConverter;
+        this.clientId = clientId;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> convert (@NonNull Jwt jwt) 
