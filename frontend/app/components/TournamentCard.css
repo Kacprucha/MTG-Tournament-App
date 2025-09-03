@@ -1,0 +1,68 @@
+.tournament-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 2px solid #50d8d7;
+  border-radius: 10px;
+  background-color: #1f2627;
+  color: white;
+  padding: 12px;
+  height: 100%;
+  max-width: 300px; 
+  margin: 0 auto;
+  box-shadow: 0 0 10px rgba(80, 216, 215, 0.2);
+}
+
+.tournament-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.tournament-title {
+  font-size: 20px;
+  color: #50d8d7;
+  margin: 0;
+}
+
+.tournament-type {
+  font-size: 14px;
+  color: #ccc;
+  margin: 2px 0 0 0;
+}
+
+.tournament-image-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.tournament-image {
+  width: 100%;
+  max-height: 180px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.tournament-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.tournament-button {
+  background-color: transparent;
+  color: #50d8d7;
+  border: 2px solid #50d8d7;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tournament-button:hover {
+  background-color: #50d8d7;
+  color: #1f2627;
+}

@@ -1,15 +1,20 @@
 package com.example.backend.dto;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+import com.example.backend.entities.MatchStatus;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.jackson.Jacksonized;
 
-@Value
+@Getter
+@Setter
 @Builder
 @Jacksonized
 public class MatchDto 
@@ -18,35 +23,55 @@ public class MatchDto
     @JsonView({Views.Get.class, Views.Put.class})
     Long id;
 
+    @Schema(description = "Tournament ID")
+    @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
+    Long tournamentId;
+
     @Schema(description = "Tournament name")
     @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
     String tournamentName;
-
-    @Schema(description = "First player")
+    
+    @Schema(description = "Match status")
     @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
-    String player1;
+    MatchStatus status;
 
-    @Schema(description = "Second player")
+    @Schema(description = "Match type")
     @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
-    String player2;
+    String type;
+
+    @Schema(description = "Round number")
+    @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
+    Integer round;
 
     @Schema(description = "Table number")
     @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
     Integer tableNumber;
 
-    @Schema(description = "Winer of the match")
-    @JsonView({Views.Get.class, Views.Put.class})
-    String winner;
+    @Schema(description = "Best of number")
+    @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
+    Integer bestOf;
 
-    @Schema(description = "Player 1 HP")
-    @JsonView({Views.Get.class, Views.Put.class})
-    Integer player1Hp;
+    @Schema(description = "List of participant Keycloak IDs")
+    @JsonView({Views.Get.class, Views.Post.class})
+    private List<UUID> participantIds;
 
-    @Schema(description = "Time of the match in seconds")
-    @JsonView({Views.Get.class, Views.Put.class})
-    Integer time;
+    @Schema(description = "List of participant usernames")
+    @JsonView({Views.Get.class, Views.Post.class})
+    private List<String> participantUsernames;
 
-    @Schema(description = "List of player 1 achievements")
+    @Schema(description = "Keycloak ID of the winner")
     @JsonView({Views.Get.class, Views.Put.class})
-    List<Integer> player1Achievements;
+    private UUID winnerId;
+
+    @Schema(description = "Username of the winner")
+    @JsonView({Views.Get.class, Views.Post.class})
+    private String winnerUsername;
+
+    @Schema(description = "List of match winners")
+    @JsonView({Views.Get.class, Views.Put.class})
+    List<String> gameWinners;
+
+    @Schema(description = "Map of achievements for each participant")
+    @JsonView({Views.Get.class, Views.Put.class})
+    Map<String, Map<Long, Integer>> achievements;
 }

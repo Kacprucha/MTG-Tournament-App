@@ -1,14 +1,38 @@
 package com.example.backend.mapping;
 
-import org.mapstruct.Mapper;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.mapstruct.AfterMapping;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import com.example.backend.dto.MatchDto;
 import com.example.backend.entities.Match;
+import com.example.backend.entities.MatchAchievement;
 
-@Mapper
+//@Mapper(componentModel = "spring")
 public interface MatchMapper 
 {
-    MatchDto toDto (Match match);
+    @Mapping(source = "tournament.id", target = "tournamentId")
+    @Mapping(source = "tournament.name", target = "tournamentName")
+    @Mapping(target = "achievements", ignore = true)
+    MatchDto toDto(Match match);
 
-    Match toEntity (MatchDto matchDto);
+    @AfterMapping
+    default void afterToDto(Match match, @MappingTarget MatchDto dto) 
+    {
+        // Logika transformacji List<MatchAchievement> w zagnieżdżoną mapę
+        if (match.getAchievements() != null) {
+            Map<String, Map<Long, Integer>> achievementsByParticipant = match.getAchievements().stream()
+                .collect(Collectors.groupingBy(
+                    ach -> ach.getParticipantId().toString(),
+                    Collectors.toMap(
+                        ach -> ach.getAchievement().getId(),
+                        MatchAchievement::getValue
+                    )
+                ));
+            dto.setAchievements(achievementsByParticipant);
+        }
+    }
 }

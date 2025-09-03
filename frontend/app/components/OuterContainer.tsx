@@ -1,0 +1,18 @@
+import { ReactNode } from "react";
+
+interface OuterContainerProps {
+  children: ReactNode;
+}
+
+export default function OuterContainer({ children }: OuterContainerProps) {
+  return (
+    <div
+      className="fixed inset-0 border-2 border-cyan-400 rounded-lg flex flex-col"
+      style={{
+        inset: '80px 60px 41px 60px'
+      }}
+    >
+      {children}
+    </div>
+  );
+}
