@@ -1,5 +1,6 @@
 import React from 'react';
 import MatchListItem from './MatchListItem';
+import { MatchSummary } from '@/types/tournament';
 
 interface Match {
   id: number;
@@ -10,7 +11,7 @@ interface Match {
 }
 
 interface MatchListProps {
-  matches: Match[];
+  matches: MatchSummary[];
 }
 
 const MatchList: React.FC<MatchListProps> = ({ matches }) => {
@@ -26,8 +27,8 @@ const MatchList: React.FC<MatchListProps> = ({ matches }) => {
         matches.map(match => (
           <MatchListItem
             key={match.id}
-            player1={match.player1}
-            player2={match.player2}
+            player1={match.participantUsernames.at(0)!}
+            player2={match.participantUsernames.at(1)!}
             roundInfo={`Runda ${match.round}`}
             status={match.status}
             onViewClick={() => handleViewMatch(match.id)}

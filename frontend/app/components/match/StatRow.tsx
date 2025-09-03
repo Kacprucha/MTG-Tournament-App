@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-import { FaPlus, FaMinus } from "react-icons/fa"; // Używamy ikon z react-icons
+import { FaPlus, FaMinus } from "react-icons/fa"; 
 
-// Definiujemy, jakie właściwości (props) będzie przyjmował nasz komponent
 interface StatRowProps {
-  label: string; // Etykieta, np. "Ilość życia..."
-  value: number; // Aktualna wartość liczbowa
-  onChange: (newValue: number) => void; // Funkcja wywoływana, gdy wartość się zmienia
+  label: string; 
+  value: number; 
+  onChange: (newValue: number) => void; 
 }
 
 const StatRow: React.FC<StatRowProps> = ({ label, value, onChange }) => {
@@ -16,14 +15,12 @@ const StatRow: React.FC<StatRowProps> = ({ label, value, onChange }) => {
   };
 
   const handleDecrement = () => {
-    // Opcjonalnie: zapobiegamy zejściu poniżej zera
     if (value > 0) {
       onChange(value - 1);
     }
   };
 
   return (
-    // Główny kontener używający flexbox do ułożenia etykiety i kontrolki
     <div className="flex items-center justify-between w-full p-4">
       {/* Etykieta po lewej stronie */}
       <span className="text-gray-300 text-lg">{label}</span>

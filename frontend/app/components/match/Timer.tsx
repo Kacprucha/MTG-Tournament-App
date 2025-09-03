@@ -1,28 +1,31 @@
 "use client";
+
 import { useState, useEffect } from "react";
 
-export default function Timer() {
+interface TimerProps {
+  isRunning: boolean; 
+}
+
+export default function Timer({ isRunning }: TimerProps) {
   const [time, setTime] = useState(0); // w sekundach
-  const [running, setRunning] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    if (running) {
+    
+    if (isRunning) {
       interval = setInterval(() => {
         setTime((prev) => prev + 1);
       }, 1000);
-    } else if (!running && interval) {
-      clearInterval(interval);
+    } else {
+      setTime(0);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [running]);
+  }, [isRunning]);
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, "0");
+    const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
     const secs = (seconds % 60).toString().padStart(2, "0");
     return `${mins}:${secs}`;
   };

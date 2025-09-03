@@ -1,15 +1,17 @@
-export default function ControlButtons() {
+import { MatchStatus } from "@/types/enums";
+import Button from "../Button";
+
+interface ControlButtonsProps {
+  onStartClick:() => void;
+  onEndClick:() => void;
+  matchStatus: MatchStatus;
+}
+
+export default function ControlButtons({onStartClick, onEndClick, matchStatus} : ControlButtonsProps) {
   return (
     <div className="flex flex-col gap-3 text-center">
-      <button className="px-4 py-2 rounded-full border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition">
-        START
-      </button>
-      <button className="px-4 py-2 rounded-full border-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black transition">
-        PAUZA
-      </button>
-      <button className="px-4 py-2 rounded-full border-2 border-red-400 text-red-400 hover:bg-red-400 hover:text-black transition">
-        KONIEC
-      </button>
+      <Button text="START" onClick={onStartClick} disabled={matchStatus !== MatchStatus.PENDING}/>
+      <Button text="KONIEC" onClick={onEndClick} danger disabled={matchStatus !== MatchStatus.IN_PROGRESS}/>
     </div>
   );
 }

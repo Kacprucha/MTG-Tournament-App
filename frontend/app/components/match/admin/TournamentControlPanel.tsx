@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from '../../Button';
 
 interface TournamentControlPanelProps {
   currentRound: number;
@@ -32,13 +33,8 @@ const TournamentControlPanel: React.FC<TournamentControlPanelProps> = ({
       </div>
 
       {/* Przycisk Nowe losowanie */}
-      <div className="mt-auto">
-        <button 
-          onClick={onNewPairingClick}
-          className="w-full border-2 border-indigo-400 text-indigo-400 font-bold rounded-full py-2 hover:bg-indigo-400 hover:text-white transition-colors duration-200"
-        >
-          Nowe losowanie
-        </button>
+      <div className="mt-auto self-center">
+        <Button text={"Rozpocznij faze pucharowa"} onClick={onNewPairingClick} disabled={totalRounds !== completedGames}/>
       </div>
     </div>
   );

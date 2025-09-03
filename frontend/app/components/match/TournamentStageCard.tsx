@@ -8,7 +8,6 @@ interface TournamentStageCardProps {
   stageName: string;
   participants: string[];
   matchWinner: string[];
-  // ... ewentualnie inne pola jak 'round', 'stageName' etc.
 }
 
 const TournamentStageCard: React.FC<TournamentStageCardProps> = ({ stageName, participants, matchWinner }) => {
