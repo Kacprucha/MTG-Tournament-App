@@ -11,6 +11,7 @@ declare module 'next-auth/jwt' {
     error?: string
     userRoles?: string[]
     username?: string
+    name?: string;
   }
 }
 
@@ -18,6 +19,7 @@ declare module 'next-auth/jwt' {
 declare module 'next-auth' {
   interface Profile {
     preferred_username?: string;
+    name?: string; 
     realm_access?: {
       roles: string[];
     };
@@ -30,6 +32,7 @@ declare module 'next-auth' {
     user?: {
       id?: string;
       username?: string
+      name?: string; 
       roles?: string[] 
     } & DefaultSession['user']
   }
