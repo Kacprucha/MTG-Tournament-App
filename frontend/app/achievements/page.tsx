@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Spin, Alert, Typography, Tag } from "antd";
 import type { ColumnsType } from 'antd/es/table';
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useTournament } from "@/context/TournamentContext";
 import OuterContainer from "../components/OuterContainer";
@@ -11,6 +11,7 @@ import AntDTheme from "../components/AntDTheme";
 import NavLink from "../components/NavLink";
 import { Achievement } from "@/types/tournament";
 import { TournamentStatus } from "@/types/enums";
+import Error from "next/error";
 
 const { Title } = Typography;
 
@@ -42,9 +43,12 @@ const AchievementsPage = () => {
           );
           setAchievements(response.data);
           setError(null);
-        } catch (err: any) {
-          setError(err.response?.data?.message || "Nie udało się pobrać danych o osiągnięciach.");
-          console.error(err);
+        } catch (err: unknown) {
+          if (err instanceof AxiosError) {
+            setError(err.response?.data?.message || "Nie udało się pobrać danych o osiągnięciach.");
+          } else {
+            setError("Wystąpił nieoczekiwany błąd.");
+          }
         } finally {
           setLoading(false);
         }
