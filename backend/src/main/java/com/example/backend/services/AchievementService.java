@@ -13,6 +13,7 @@ import com.example.backend.converters.DtoConverter;
 import com.example.backend.dto.AchievementDto;
 import com.example.backend.entities.Achievement;
 import com.example.backend.entities.Tournament;
+import com.example.backend.entities.TournamentStatus;
 import com.example.backend.repository.AchievementRepository;
 import com.example.backend.repository.TournamentRepository;
 
@@ -23,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 public class AchievementService 
 {
     private final AchievementRepository achievementRepository;
-    //private final AchievementMapper achievementMapper;
     private final DtoConverter dtoConverter;
     
     private final TournamentRepository tournamentRepository;
@@ -40,9 +40,14 @@ public class AchievementService
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tournament not found."));
 
+        if (tournament.getStatus() == TournamentStatus.FINISHED || tournament.getStatus() == TournamentStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot add achievements to a finished or cancelled tournament.");
+        }
+
         Achievement newAchievement = new Achievement();
         newAchievement.setName(createDto.getName());
         newAchievement.setPrice(createDto.getPrice());
+        newAchievement.setAggregationType(createDto.getAggregationType());
         
         tournament.addAchievement(newAchievement); 
         
