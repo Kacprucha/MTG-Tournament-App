@@ -1,9 +1,7 @@
 package com.example.backend.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,9 +24,9 @@ public class JwtConfig
     //     return jwtDecoder;
     // }
 
-    @Bean
-    public JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter() 
-    {
-        return new JwtGrantedAuthoritiesConverter();
-    }
+    // @Bean
+    // public JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter() 
+    // {
+    //     return new JwtGrantedAuthoritiesConverter();
+    // }
 }
