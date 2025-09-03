@@ -85,7 +85,7 @@ Follow these instructions to get the project up and running on your local machin
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://your-repo-url.com/mtg-tournament-app.git
+    git clone https://github.com/Kacprucha/MTG-Tournament-App
     cd mtg-tournament-app
     ```
 
