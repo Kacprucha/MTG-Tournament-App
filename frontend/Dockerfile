@@ -1,17 +1,24 @@
-FROM node:24-alpine as builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json ./
-COPY package-lock.json ./
-RUN npm ci
+COPY package.json package-lock.json ./
+
+RUN npm install
 
 COPY . .
+
 RUN npm run build
 
-FROM nginx:1.25.3-alpine
+FROM node:20-alpine AS production
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/build /usr/share/nginx/html
+WORKDIR /app
 
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+CMD ["node", "server.js"]
