@@ -23,6 +23,13 @@ export default function Scoreboard({ tournamentName, scoreboard, achievements }:
     return row.achievements[selectedStatId] ?? 0;
   };
 
+  const getStatFloorValue = (row: ScoreboardEntry) => {
+    if (selectedStatId === "points") {
+      return Math.floor(row.points);
+    }
+    return Math.floor(row.achievements[selectedStatId]) ?? 0;
+  };
+
   const sortedScoreboard = useMemo(() => {
     if (!scoreboard) return [];
     return [...scoreboard].sort((a, b) => getStatValue(b) - getStatValue(a));
@@ -58,7 +65,7 @@ export default function Scoreboard({ tournamentName, scoreboard, achievements }:
             <span>
               {idx + 1}. {row.username}
             </span>
-            <span className="font-bold">{getStatValue(row)}</span>
+            <span className="font-bold">{getStatFloorValue(row)}</span>
           </li>
         ))}
       </ul>

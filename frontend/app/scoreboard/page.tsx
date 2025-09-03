@@ -5,7 +5,7 @@ import ScoreboardBig from "@/app/components/scoreboardPage/ScoreboardBig";
 import { useTournament } from "@/context/TournamentContext";
 import { Achievement, ScoreboardEntry, TournamentDetails } from "@/types/tournament";
 import Alert from "antd/es/alert/Alert";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -40,8 +40,12 @@ export default function ScoreboardPage() {
           setAchievementsData(achievementsResponse.data);
           setError(null);
 
-        } catch (err: any) {
-          setError(err.response?.data?.message || "Nie udało się pobrać danych tabeli wyników.");
+        } catch (err: unknown) {
+          if (err instanceof AxiosError) {
+            setError(err.response?.data?.message || "Nie udało się pobrać danych tabeli wyników.");
+          } else {
+            setError("Wystąpił nieoczekiwany błąd.");
+          }
           console.error(err);
         } finally {
           setLoading(false);
