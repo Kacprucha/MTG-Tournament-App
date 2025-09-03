@@ -7,8 +7,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.example.backend.converters.DtoConverter;
+import com.example.backend.dto.ScoreboardDto;
 import com.example.backend.entities.Achievement;
 import com.example.backend.entities.Match;
 import com.example.backend.entities.MatchAchievement;
@@ -23,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 public class ScoreboardService 
 {
     private final ScoreboardRepository scoreboardRepository;
+
+    private final DtoConverter dtoConverter;
 
     private static final float POINTS_FOR_WIN = 1f;
 
@@ -100,5 +106,26 @@ public class ScoreboardService
                     }
                 });
         });
+    }
+
+    public ScoreboardDto updateScoreboardEntry(Long entryId, ScoreboardDto updateDto) 
+    {
+        Scoreboard entry = scoreboardRepository.findById(entryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Scoreboard entry not found."));
+
+        // Aktualizuj tylko te pola, które zostały przesłane
+        if (updateDto.getPoints() != null) 
+        {
+            entry.setPoints(updateDto.getPoints());
+        }
+        if (updateDto.getAchievements() != null) 
+        {
+            entry.getAchievements().clear();
+            entry.getAchievements().putAll(updateDto.getAchievements());
+        }
+
+        Scoreboard savedEntry = scoreboardRepository.save(entry);
+    
+        return dtoConverter.toScoreboardDto(savedEntry);
     }
 }
