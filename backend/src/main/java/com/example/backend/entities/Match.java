@@ -1,7 +1,9 @@
 package com.example.backend.entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
@@ -81,7 +83,7 @@ public class Match
         fetch = FetchType.LAZY
     )
     @Builder.Default
-    private List<MatchAchievement> achievements = new ArrayList<>();
+    private Set<MatchAchievement> achievements = new HashSet<>();
 
     public void addMatchAchievement(MatchAchievement achievement) {
         this.achievements.add(achievement);

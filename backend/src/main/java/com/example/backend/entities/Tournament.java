@@ -1,7 +1,9 @@
 package com.example.backend.entities;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -60,14 +62,14 @@ public class Tournament
     @Column(name = "participant_keycloak_id")
     @OrderColumn
     @Builder.Default
-    private Set<UUID> participantsIds = new HashSet<>();
+    private List<UUID> participantsIds = new ArrayList<>();
 
     @ElementCollection(fetch= FetchType.LAZY)
     @CollectionTable(name = "tournament_participants_usernames", joinColumns = @JoinColumn(name = "tournament_id"))
     @Column(name = "participant_username")
     @OrderColumn
     @Builder.Default
-    private Set<String> participantsUsernames = new HashSet<>();
+    private List<String> participantsUsernames = new ArrayList<>();
 
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
