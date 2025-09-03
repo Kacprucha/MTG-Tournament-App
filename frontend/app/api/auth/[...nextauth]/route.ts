@@ -58,6 +58,7 @@ const handler = NextAuth({
 
         token.sub = profile.sub;
         token.username = profile.preferred_username;
+        token.name = profile.name;
         token.userRoles = profile.realm_access?.roles;
       }
 
