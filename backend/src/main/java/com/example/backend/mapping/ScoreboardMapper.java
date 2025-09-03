@@ -3,14 +3,13 @@ package com.example.backend.mapping;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import com.example.backend.dto.ScoreboardDto;
 import com.example.backend.entities.Scoreboard;
 
-@Mapper(componentModel = "spring")
+//@Mapper(componentModel = "spring")
 public interface ScoreboardMapper 
 {
     @Mapping(source = "achievements", target = "achievements", qualifiedByName = "mapAchievements")

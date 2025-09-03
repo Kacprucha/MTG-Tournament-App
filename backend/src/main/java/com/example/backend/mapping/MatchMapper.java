@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
@@ -12,7 +11,7 @@ import com.example.backend.dto.MatchDto;
 import com.example.backend.entities.Match;
 import com.example.backend.entities.MatchAchievement;
 
-@Mapper(componentModel = "spring")
+//@Mapper(componentModel = "spring")
 public interface MatchMapper 
 {
     @Mapping(source = "tournament.id", target = "tournamentId")

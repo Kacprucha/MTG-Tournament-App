@@ -1,20 +1,19 @@
 package com.example.backend.mapping;
 
-import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import com.example.backend.dto.TournamentDto;
 import com.example.backend.entities.Tournament;
 
-@Mapper(
-    componentModel = "spring",
-    uses = {
-        MatchMapper.class, 
-        ScoreboardMapper.class,
-        AchievementMapper.class
-    }
-)
+// @Mapper(
+//     componentModel = "spring",
+//     uses = {
+//         MatchMapper.class, 
+//         ScoreboardMapper.class,
+//         AchievementMapper.class
+//     }
+// )
 public interface TournamentMapper 
 {    
     TournamentDto toDto(Tournament tournament);
