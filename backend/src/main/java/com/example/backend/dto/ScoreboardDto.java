@@ -35,5 +35,5 @@ public class ScoreboardDto
     
     @Schema(description = "Map of achievements for this participant (AchievementID -> Value)")
     @JsonView(Views.Get.class)
-    private Map<String, Integer> achievements;
+    private Map<Long, Integer> achievements;
 }

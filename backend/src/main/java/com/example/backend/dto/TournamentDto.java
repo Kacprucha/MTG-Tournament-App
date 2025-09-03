@@ -8,8 +8,10 @@ import com.example.backend.entities.TournamentStatus;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.jackson.Jacksonized;
 
@@ -17,6 +19,8 @@ import lombok.extern.jackson.Jacksonized;
 @Setter
 @Builder
 @Jacksonized
+@NoArgsConstructor
+@AllArgsConstructor
 public class TournamentDto 
 {
     @Schema(description = "Tournament primary key")
