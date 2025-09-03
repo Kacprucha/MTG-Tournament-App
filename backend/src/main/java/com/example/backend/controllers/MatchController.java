@@ -1,10 +1,13 @@
 package com.example.backend.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -96,5 +99,38 @@ public class MatchController
     {
         MatchDto updatedMatch = matchService.updateMatchResults(id, updateDto);
         return ResponseEntity.ok(updatedMatch);
+    }
+
+    @GetMapping
+    @JsonView(Views.Get.class)
+    public ResponseEntity<List<MatchDto>> getMatches(
+        @RequestParam Long tournamentId,
+        @RequestParam(required = false) String participantUsername
+    ) 
+    {
+        List<MatchDto> matches;
+        
+        if (participantUsername != null) 
+        {
+            matches = matchService.findMatchesByTournamentAndParticipant(tournamentId, participantUsername);
+        } 
+        else 
+        {
+            matches = matchService.findMatchesByTournament(tournamentId);
+        }
+
+        return ResponseEntity.ok(matches);
+    }
+
+    @Operation(summary = "Find the current or next match for the authenticated user in a tournament")
+    @GetMapping("/current")
+    public ResponseEntity<MatchDto> getCurrentMatchForUser(
+        @RequestParam Long tournamentId,
+        @AuthenticationPrincipal Jwt jwt
+    ) 
+    {
+        UUID userId = UUID.fromString(jwt.getSubject());
+
+        return ResponseEntity.of(matchService.findNextMatchForUser(tournamentId, userId));
     }
 }
