@@ -11,7 +11,7 @@ export const SessionWatcher = () => {
   useEffect(() => {
     if (status === 'unauthenticated' && tournamentId !== null) {
       console.log("Sesja wygasła lub użytkownik się wylogował. Czyszczenie stanu turnieju...");
-      setCurrentTournament(null, null);
+      setCurrentTournament(null, null, null);
     }
   }, [status, tournamentId, setCurrentTournament]);
 

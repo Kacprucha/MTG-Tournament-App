@@ -8,6 +8,8 @@ import { useTournament } from '@/context/TournamentContext';
 import Image from "next/image"
 import Link from "next/link"
 import NavLink from "./NavLink"
+import { message } from "antd"
+import axios from "axios"
 
 export default function Navbar() {
   const { data: session, status } = useSession()
@@ -15,7 +17,7 @@ export default function Navbar() {
 
   const userName = session?.user?.name
   const isAdmin = session?.user?.roles?.includes("ADMIN")
-  const { tournamentName } = useTournament();
+  const { tournamentName, tournamentId } = useTournament();
   const tournamentNameLable = tournamentName || "-";
 
   // --- Definicje dynamicznych funkcji dla przycisków ---
@@ -27,7 +29,6 @@ export default function Navbar() {
       const postLogoutRedirectUri = "http://localhost:3000/logout-callback";
 
       if (!issuerUrl) {
-        const { signOut } = require("next-auth/react");
         signOut({ callbackUrl: postLogoutRedirectUri });
         return;
       }
@@ -47,6 +48,26 @@ export default function Navbar() {
     }
   };
 
+  const handleFindCurrentGame = async () => {
+    if (!tournamentId || !session) {
+      message.warning("Najpierw wybierz turniej.");
+      return;
+    }
+    try {
+      const response = await axios.get(`http://localhost:8080/matches/current?tournamentId=${tournamentId}`, {
+        headers: { Authorization: `Bearer ${session.accessToken}` }
+      });
+
+      if (response.data) {
+        router.push(`/matches/${response.data.id}`);
+      } else {
+        message.info("Nie masz obecnie żadnych aktywnych meczów.");
+      }
+    } catch (error) {
+      message.error("Błąd podczas wyszukiwania meczu.");
+    }
+  };
+
   // --- Renderowanie komponentu ---
 
   // Nie renderuj nic, dopóki sesja się nie załaduje, aby uniknąć "mrugania"
@@ -61,7 +82,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="text-white p-5 sticky top-0 z-50">
+    <header className="bg-[#293132] text-white p-5 sticky top-0 z-50">
       <div className="w-full flex justify-between items-center px-6 md:px-10">
         <div className="flex items-center gap-4">
           {session && (
@@ -69,14 +90,21 @@ export default function Navbar() {
               <Link href="/" className="flex items-center gap-2">
                 <span className="text-xl font-bold">MTG App</span>
               </Link>
-              { isAdmin && (
+              { isAdmin ? (
                 <NavLink href="/matches/admin/dashboard" >Aktualne gry</NavLink>
-              )}
-              {!isAdmin && (
-                <NavLink href="/matches/active">Aktualna gra</NavLink>
+              ) 
+              :
+              (
+                <Button text="Aktualna gra" onClick={handleFindCurrentGame}/>
               )}
               <NavLink href="/scoreboard">Tabela wyników</NavLink>
-              <NavLink href="/my-stats">Moje wyniki</NavLink>
+              { isAdmin ? (
+                <NavLink href="/admin/players">Wyniki graczy</NavLink>
+              ) 
+              :
+              (
+                <NavLink href="/my-stats">Moje wyniki</NavLink>
+              )}
               <NavLink href="/achievements">Osiągnięcia</NavLink>
               <Button text="Wyloguj" onClick={handleLogoutClick}/>
             </>
