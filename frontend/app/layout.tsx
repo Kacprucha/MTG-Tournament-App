@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Kanit } from "next/font/google";
+import { AntdRegistry } from '@ant-design/nextjs-registry'; 
+import { App, ConfigProvider } from 'antd';
+import plPL from 'antd/locale/pl_PL';
 import "./globals.css";
 import Providers from "./components/Providers"
 import Navbar from "./components/Navbar";
@@ -35,13 +38,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>
-          <TournamentProvider>
-            <SessionWatcher/>
-            <Navbar /> 
-            {children}
-          </TournamentProvider>
-        </Providers>
+        <AntdRegistry>
+          <ConfigProvider locale={plPL}>
+            <Providers> 
+              <TournamentProvider>
+                <SessionWatcher />
+                <Navbar />
+                <main>{children}</main> 
+              </TournamentProvider>
+            </Providers>
+          </ConfigProvider>
+        </AntdRegistry>
       </body>
     </html>
   );
