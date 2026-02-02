@@ -1,10 +1,10 @@
 package com.example.backend.entities;
 
+import com.example.backend.embeddable.TournamentParticipantId;
+
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -22,22 +22,14 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Match 
+public class TournamentParticipant 
 {
-    @Id
-    @GeneratedValue
-    private Long id;
+    @EmbeddedId
+    private TournamentParticipantId id;
 
-    @ManyToOne
     @JoinColumn(name = "tournament_id", nullable = false)
     private Tournament tournament;
 
-    @ManyToOne
-    @JoinColumn(name = "match_status_id", nullable = false)
-    private MatchStatus matchStatus;
-
-    private String type;
-    private Integer round;
-    private Integer bestOf;
-    private Integer tableNumber;    
+    @JoinColumn(name="player_id", nullable = false)
+    private Player player;
 }

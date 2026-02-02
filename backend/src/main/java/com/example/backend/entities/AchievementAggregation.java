@@ -12,7 +12,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-
 @Entity
 @Table
 @Setter
@@ -21,11 +20,10 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class MatchStatus
-{
+public class AchievementAggregation {
+    
     @Id
     @GeneratedValue
     private Long id;
-
-    private String status;
+    private String aggregation;
 }

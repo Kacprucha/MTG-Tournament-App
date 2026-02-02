@@ -1,11 +1,9 @@
 package com.example.backend.entities;
 
-import java.time.LocalDate;
+import com.example.backend.embeddable.MatchParticipantId;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -25,24 +23,18 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tournament
+public class MatchParticipant 
 {
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    private boolean isLegacy;
+    @EmbeddedId
+    private MatchParticipantId id;
 
     @ManyToOne
-    @JoinColumn(name = "tournament_status_id", nullable = false)
-    private TournamentStatus tournamentStatus;
+    @JoinColumn(name = "match_id", nullable=false)
+    private Match match;
 
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "player_id", nullable=false)
+    private Player player;
 
-    private String type;
-    private String addon;
-    private LocalDate date;
-
-    
+    private boolean isWinner;
 }
