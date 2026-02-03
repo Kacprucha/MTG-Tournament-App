@@ -37,7 +37,7 @@ public class MatchLog
     @JoinColumn(name = "achievement_id", nullable = false)
     private Achievement achievement;
     
-    private Integer count;
+    private int count;
     private Instant loggedAt;
     private Instant updatedAt;
 }

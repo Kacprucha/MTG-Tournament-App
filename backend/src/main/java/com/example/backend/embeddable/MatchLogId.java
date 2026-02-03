@@ -8,12 +8,12 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class MatchLogId implements Serializable
 {
-    private Long march;
+    private Long match;
     private Long achievement;
 
     public MatchLogId(Long march, Long achievement) 
     {
-        this.march = march;
+        this.match = march;
         this.achievement = achievement;
     }
 
@@ -34,7 +34,7 @@ public class MatchLogId implements Serializable
             {
                 result = true;
             }
-            else if (!Objects.equals(this.march, other.march) || !Objects.equals(this.achievement, other.achievement)) 
+            else if (!Objects.equals(this.match, other.match) || !Objects.equals(this.achievement, other.achievement)) 
             {
                 result = false;
             }
@@ -46,6 +46,6 @@ public class MatchLogId implements Serializable
     @Override
     public int hashCode() 
     {
-        return Objects.hash(march, achievement);  
+        return Objects.hash(match, achievement);  
     }
 }
