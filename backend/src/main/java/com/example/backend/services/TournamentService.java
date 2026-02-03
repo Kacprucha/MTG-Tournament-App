@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.converters.DtoConverter;
-import com.example.backend.dto.ParticipantDto;
+import com.example.backend.dto.PlayerDto;
 import com.example.backend.dto.TournamentDto;
 import com.example.backend.entities.Scoreboard;
 import com.example.backend.entities.Tournament;
@@ -174,7 +174,7 @@ public class TournamentService
         tournamentRepository.save(tournament);
     }
 
-    public List<ParticipantDto> getParticipants(Long tournamentId) 
+    public List<PlayerDto> getParticipants(Long tournamentId) 
     {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tournament not found"));
@@ -184,10 +184,10 @@ public class TournamentService
         List<String> usernames = tournament.getParticipantsUsernames();
         List<UUID> ids = tournament.getParticipantsIds();
     
-        List<ParticipantDto> participants = new ArrayList<>();
+        List<PlayerDto> participants = new ArrayList<>();
         for (int i = 0; i < usernames.size(); i++) 
         {
-            participants.add(new ParticipantDto(ids.get(i), usernames.get(i)));
+            participants.add(new PlayerDto(ids.get(i), usernames.get(i)));
         }
         
         return participants;

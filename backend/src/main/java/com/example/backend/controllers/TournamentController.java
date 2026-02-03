@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.backend.dto.ParticipantDto;
+import com.example.backend.dto.PlayerDto;
 import com.example.backend.dto.TournamentDto;
 import com.example.backend.dto.Views;
 import com.example.backend.services.MatchService;
@@ -171,7 +171,7 @@ public class TournamentController
     @Operation(summary = "Get all participants for a tournament")
     @GetMapping("/{id}/participants")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ParticipantDto>> getTournamentParticipants(@PathVariable Long id) 
+    public ResponseEntity<List<PlayerDto>> getTournamentParticipants(@PathVariable Long id) 
     {
         return ResponseEntity.ok(tournamentService.getParticipants(id));
     }
