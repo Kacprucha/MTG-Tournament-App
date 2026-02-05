@@ -1,38 +1,46 @@
 package com.example.backend.mapping;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.mapstruct.AfterMapping;
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import com.example.backend.dto.MatchDto;
 import com.example.backend.entities.Match;
-import com.example.backend.entities.MatchAchievement;
+import com.example.backend.entities.MatchStatus;
+import com.example.backend.entities.Tournament;
 
-//@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring")
 public interface MatchMapper 
 {
     @Mapping(source = "tournament.id", target = "tournamentId")
-    @Mapping(source = "tournament.name", target = "tournamentName")
-    @Mapping(target = "achievements", ignore = true)
-    MatchDto toDto(Match match);
+    @Mapping(source = "matchStatus.id", target = "matchStatusId")
+    MatchDto toDto(Match entity);
 
-    @AfterMapping
-    default void afterToDto(Match match, @MappingTarget MatchDto dto) 
+    @Mapping(source = "tournamentId", target = "tournament")
+    @Mapping(source = "matchStatusId", target = "matchStatus")
+    Match toEntity(MatchDto dto);
+
+    @Mapping(source = "tournamentId", target = "tournament")
+    @Mapping(source = "matchStatusId", target = "matchStatus")
+    void updateEntity(MatchDto dto, @MappingTarget Match entity);
+
+    default Tournament mapTournament(Long id) 
     {
-        // Logika transformacji List<MatchAchievement> w zagnieżdżoną mapę
-        if (match.getAchievements() != null) {
-            Map<String, Map<Long, Integer>> achievementsByParticipant = match.getAchievements().stream()
-                .collect(Collectors.groupingBy(
-                    ach -> ach.getParticipantId().toString(),
-                    Collectors.toMap(
-                        ach -> ach.getAchievement().getId(),
-                        MatchAchievement::getValue
-                    )
-                ));
-            dto.setAchievements(achievementsByParticipant);
-        }
+        if (id == null) return null;
+
+        Tournament tournament = new Tournament();
+        tournament.setId(id);
+
+        return tournament;
+    }
+
+    default MatchStatus mapMatchStatus(Long id) 
+    {
+        if (id == null) return null;
+
+        MatchStatus status = new MatchStatus();
+        status.setId(id);
+        
+        return status;
     }
 }
