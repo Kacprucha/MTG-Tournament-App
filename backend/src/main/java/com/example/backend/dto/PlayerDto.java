@@ -18,6 +18,10 @@ public class PlayerDto
     @JsonView({Views.Get.class, Views.Put.class})
     private Long id;
 
+    @Schema(description = "Name of the player")
+    @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
+    private String name;
+
     @Schema(description="UUID of the player form Keycloak")
     @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
     private UUID uuid;

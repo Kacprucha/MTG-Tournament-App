@@ -25,6 +25,10 @@ public class AchievementDto
     @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
     private String priceDescription;
 
+    @Schema(description = "Description of the achievement", example = "Awarded to the player with the most flying creatures in their deck")
+    @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
+    private String achievementDescription;
+
     @Schema(description = "How the achievement values should be aggregated (SUM, MAX, MIN)")
     @NotNull(groups = Views.Post.class)
     @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
