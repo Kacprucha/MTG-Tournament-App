@@ -4,8 +4,10 @@ import com.example.backend.embeddable.ScoreboardId;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,12 +27,12 @@ public class Scoreboard
     @EmbeddedId
     private ScoreboardId id;
 
-    @ManyToOne
-    @JoinColumn(name = "tournament_id", nullable = false)
+    @MapsId("tournament")
+    @JoinColumn(name = "tournament_id")
     private Tournament tournament;
 
-    @ManyToOne
-    @JoinColumn(name = "player_id", nullable = false)
+    @MapsId("player")
+    @JoinColumn(name = "player_id")
     private Player player;
 
     private float points;

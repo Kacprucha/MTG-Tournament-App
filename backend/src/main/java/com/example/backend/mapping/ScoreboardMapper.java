@@ -1,33 +1,25 @@
 package com.example.backend.mapping;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.MappingTarget;
 
 import com.example.backend.dto.ScoreboardDto;
 import com.example.backend.entities.Scoreboard;
 
-//@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring")
 public interface ScoreboardMapper 
 {
-    @Mapping(source = "achievements", target = "achievements", qualifiedByName = "mapAchievements")
+    @Mapping(target = "tournamentId", source = "id.tournament")  
+    @Mapping(target = "playerId", source = "id.player")
+    @Mapping(target = "points", source = "points")
     ScoreboardDto toDto(Scoreboard scoreboard);
 
-    // --- Metody Pomocnicze ---
+    @Mapping(target = "id.tournament", source = "tournamentId")  
+    @Mapping(target = "id.player", source = "playerId")
+    @Mapping(target = "points", source = "points")
+    Scoreboard toEntity(ScoreboardDto dto);
 
-    @Named("mapAchievements")
-    default Map<String, Integer> mapAchievements(Map<Long, Integer> achievements) 
-    {
-        if (achievements == null) {
-            return null; 
-        }
-        
-        return achievements.entrySet().stream()
-                .collect(Collectors.toMap(
-                        entry -> entry.getKey().toString(),
-                        Map.Entry::getValue
-                ));
-    }
+    @Mapping(target = "points", source = "points")
+    void updateEntity(ScoreboardDto dto, @MappingTarget Scoreboard entity);
 }

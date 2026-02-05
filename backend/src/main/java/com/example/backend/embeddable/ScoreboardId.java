@@ -1,50 +1,26 @@
 package com.example.backend.embeddable;
 
 import java.io.Serializable;
-import java.util.Objects;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Embeddable
+@Getter
+@Setter
+@NoArgsConstructor 
+@AllArgsConstructor
+@EqualsAndHashCode 
 public class ScoreboardId implements Serializable 
 {
+    @Column(name = "tournament_id")
     private Long tournament;
+
+    @Column(name = "player_id")
     private Long player;
-
-    public ScoreboardId(Long tournament, Long player) 
-    {
-        this.tournament = tournament;
-        this.player = player;
-    }
-
-    @Override
-    public boolean equals(Object obj) 
-    {
-        boolean result = true;
-
-        if (obj == null || getClass() != obj.getClass())
-        {
-            result = false;
-        }
-        else
-        {
-            ScoreboardId that = (ScoreboardId) obj;
-            
-            if (this == obj)
-            {
-                result = true;
-            }
-            else if (!this.tournament.equals(that.tournament) || !this.player.equals(that.player))
-            {
-                result = false;
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(tournament, player);
-    }
 }

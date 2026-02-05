@@ -12,10 +12,6 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class ScoreboardDto 
 {
-    @Schema(description = "Scoreboard entry primary key")
-    @JsonView(Views.Get.class)
-    private Long id;
-
     @Schema(description = "Tournament ID")
     @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
     private Long tournamentId;
