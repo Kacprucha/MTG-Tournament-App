@@ -2,9 +2,11 @@ package com.example.backend.entities;
 
 import com.example.backend.embeddable.TournamentParticipantId;
 
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
+@IdClass(TournamentParticipantId.class)
 @Table
 @Setter
 @Getter
@@ -24,12 +27,13 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class TournamentParticipant 
 {
-    @EmbeddedId
-    private TournamentParticipantId id;
-
+    @Id
+    @ManyToOne
     @JoinColumn(name = "tournament_id", nullable = false)
     private Tournament tournament;
 
+    @Id
+    @ManyToOne
     @JoinColumn(name="player_id", nullable = false)
     private Player player;
 }
