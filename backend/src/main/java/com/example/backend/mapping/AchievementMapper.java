@@ -9,7 +9,7 @@ import com.example.backend.entities.Achievement;
 import com.example.backend.entities.AchievementAggregation;
 
 @Mapper(componentModel = "spring")
-public interface AchievementMapper 
+public interface AchievementMapper
 {
     @Mapping(source = "achievementAggregation.id", target = "achievementAggregationId")
     AchievementDto toDto(Achievement achievement);
