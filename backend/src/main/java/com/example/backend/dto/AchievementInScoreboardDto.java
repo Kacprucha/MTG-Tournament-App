@@ -12,15 +12,19 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class AchievementInScoreboardDto 
 {
-    @Schema(description = "Achievement ID")
+    @Schema(description = "Tournament ID (part of scoreboard key)")
+    @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
+    Long tournamentId;
+
+    @Schema(description = "Player ID (part of scoreboard key)")
+    @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
+    Long playerId;
+
+    @Schema(description = "Achivement ID")
     @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
     private Long achievementId;
 
-    @Schema(description = "Scoreboard ID (composite key: tournamentId + playerId)")
-    @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
-    private Long scoreboardId;
-
     @Schema(description = "Points earned for this achievement in the scoreboard")
     @JsonView({Views.Get.class, Views.Post.class, Views.Put.class})
-    private Integer points;
+    private float points;
 }

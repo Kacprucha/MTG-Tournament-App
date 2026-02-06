@@ -14,7 +14,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class MatchLogDto 
 {
-    @Schema(description = "Match log primary key")
+    @Schema(description = "Match ID")
     @JsonView({Views.Get.class, Views.Put.class})
     private Long matchId;
 
