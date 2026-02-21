@@ -19,10 +19,10 @@ public class FinishConfirmMessage
     // Dane z oryginalnego żądania (od Gracza A)
     private String originalReportingPlayerId;
     private String chosenWinnerUsername;
-    private Map<Long, Integer> originalReportedStats;
+    private Map<Long, Float> originalReportedStats;
     
     // Dane dodane przez Gracza B
     private String confirmingPlayerId;
     private String confirmingPlayerUsername;
-    private Map<Long, Integer> confirmingPlayerStats;
+    private Map<Long, Float> confirmingPlayerStats;
 }
