@@ -1,6 +1,8 @@
 package com.example.backend.entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -32,8 +34,7 @@ public class Match
     @JoinColumn(name = "tournament_id", nullable = false)
     private Tournament tournament;
 
-    @ManyToOne
-    @JoinColumn(name = "match_status_id", nullable = false)
+    @Enumerated(EnumType.STRING)
     private MatchStatus matchStatus;
 
     private String type;

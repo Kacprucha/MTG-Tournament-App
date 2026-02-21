@@ -1,5 +1,6 @@
 package com.example.backend.dto;
 
+import com.example.backend.entities.MatchStatus;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,7 +23,7 @@ public class MatchDto
 
     @Schema(description = "Match status")
     @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
-    Long matchStatusId;
+    MatchStatus matchStatus;
 
     @Schema(description = "Match type")
     @JsonView({Views.Get.class, Views.Put.class, Views.Post.class})
